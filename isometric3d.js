@@ -5380,7 +5380,7 @@
   function renderIso() {
     if (!active || !canvas || !ctx) return;
     const isCompactScreen = (canvas.clientWidth || 800) <= 720;
-    const maxDpr = isCompactScreen ? (cam.zoom > 1.1 ? 1.6 : 1.35) : (cam.zoom > 0.85 ? 2.15 : 1.5);
+    const maxDpr = isCompactScreen ? 1.25 : 1.5;
     const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
     const cw = canvas.clientWidth;
     const ch = canvas.clientHeight;
