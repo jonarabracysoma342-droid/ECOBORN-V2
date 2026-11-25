@@ -3490,12 +3490,25 @@ body {
 
 .ecoborn-logo-img {
   display: block;
-  max-width: 260px;
-  width: 82%;
+  max-width: 390px;
+  width: 96%;
   height: auto;
   margin: 0 auto;
   image-rendering: pixelated;
-  filter: drop-shadow(0 3px 0 rgba(59, 38, 24, 0.55));
+  filter: drop-shadow(0 5px 0 rgba(35, 20, 10, 0.75));
+}
+
+/* Remove cream box behind main menu so logo & buttons float over live nature */
+.menu-card-panel,
+.ecoborn-plaque {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.plaque-vine {
+  display: none !important;
 }
    ============================================================================ */
 .menu-learning-path {

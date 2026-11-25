@@ -1213,24 +1213,37 @@
       menuSkyCtx.restore();
     }
 
-    // Lush Grass & Toadstool Mushrooms rooted right on grassY (0.795 * mh)
+    // Swaying Grass, Toadstool Mushrooms & Hopping Frog rooted on grassY (0.795 * mh)
     const grassSpr = window.EcoSprites.get('grass', 3);
     const mushSpr = window.EcoSprites.get('mushroom', 2);
     if (grassSpr) {
       const gw = grassSpr._displaySize || grassSpr.width;
       const gh = grassSpr._displaySize || grassSpr.height;
       [0.06, 0.22, 0.78, 0.93].forEach((fx) => {
-        menuSkyCtx.drawImage(grassSpr, Math.floor(mw * fx - gw / 2), grassY - gh + 14, gw, gh);
+        const gx = mw * fx;
+        const gy = grassY + 14;
+        const sway = Math.sin(nowSec * 2.5 + fx * 12) * 0.09;
+        menuSkyCtx.save();
+        menuSkyCtx.translate(gx, gy);
+        menuSkyCtx.rotate(sway);
+        menuSkyCtx.drawImage(grassSpr, -gw / 2, -gh, gw, gh);
+        menuSkyCtx.restore();
       });
     }
     if (mushSpr) {
       const msw = (mushSpr._displaySize || mushSpr.width) * 0.8;
       const msh = (mushSpr._displaySize || mushSpr.height) * 0.8;
       [0.04, 0.95].forEach((fx) => {
-        menuSkyCtx.drawImage(mushSpr, Math.floor(mw * fx - msw / 2), grassY - msh + 12, msw, msh);
+        const mx = mw * fx;
+        const my = grassY + 12;
+        const sway = Math.sin(nowSec * 2.1 + fx * 9) * 0.07;
+        menuSkyCtx.save();
+        menuSkyCtx.translate(mx, my);
+        menuSkyCtx.rotate(sway);
+        menuSkyCtx.drawImage(mushSpr, -msw / 2, -msh, msw, msh);
+        menuSkyCtx.restore();
       });
     }
-
     // Animate & draw Padang Rumput Elang flying across the sky!
     menuEagle.animTime = nowSec;
     if (isLandscapeMenu) {
@@ -1255,15 +1268,15 @@
       menuSkyCtx.restore();
     }
 
-    // Draw animated Katak firmly on left grass (grassY) & Belalang firmly on right grass (grassY)!
-    const frogAnim = window.EcoSprites.getAnimFrame('frog', 'idle', nowSec);
+    // Draw animated Katak hopping on left grass!
+    const frogAnim = window.EcoSprites.getAnimFrame('frog', 'move', nowSec);
     if (frogAnim) {
       const fsz = 52;
-      const fx = Math.floor(mw * 0.14);
-      const fy = grassY - fsz + 11;
+      const hopPhase = Math.abs(Math.sin(nowSec * 3.0));
+      const fx = Math.floor(mw * 0.14) + Math.sin(nowSec * 0.45) * 18;
+      const fy = grassY - fsz + 11 - hopPhase * 20;
       menuSkyCtx.save();
-      menuSkyCtx.imageSmoothingEnabled = true;
-      menuSkyCtx.imageSmoothingQuality = 'high';
+      menuSkyCtx.imageSmoothingEnabled = false;
       menuSkyCtx.drawImage(frogAnim.img, frogAnim.sx, frogAnim.sy, frogAnim.sw, frogAnim.sh, fx - fsz / 2, fy, fsz, fsz);
       menuSkyCtx.restore();
     }
