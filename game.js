@@ -1977,7 +1977,10 @@
     bookBodyTextEl.innerHTML = ch.body;
     bookPageIndicator.textContent = `Hal. ${bookPage + 1} / ${BOOK_CHAPTERS.length}`;
     bookPrevBtn.disabled = bookPage === 0;
-    bookNextBtn.disabled = bookPage === BOOK_CHAPTERS.length - 1;
+    const isLastPage = bookPage === BOOK_CHAPTERS.length - 1;
+    bookNextBtn.disabled = false;
+    bookNextBtn.textContent = isLastPage ? '🎮 Selesai & Bermain' : 'Selanjutnya ▶';
+    bookNextBtn.classList.toggle('finish-play', isLastPage);
 
     bookControlsEl.innerHTML = '';
     ch.options.forEach((opt, idx) => {
@@ -2147,38 +2150,89 @@
       bctx.font = 'bold 10.5px Segoe UI, sans-serif';
       bctx.fillText(cfg.desc, cw / 2, ch - 18);
     } else {
-      // Chapter 5: HOTS Trophic Cascade Diagram
+      // Chapter 5: HOTS Trophic Cascade Diagram with Arrows, Sharp Sprites & Animated Status
       bctx.fillStyle = '#fffDF7';
       bctx.fillRect(0, 0, cw, ch);
-      bctx.font = 'bold 12px Segoe UI, sans-serif';
+      bctx.font = 'bold 11.5px Segoe UI, sans-serif';
       bctx.textAlign = 'center';
       bctx.fillStyle = '#3b2618';
-      bctx.fillText('Simulasi Rantai Makanan Saat Ular Punah:', cw / 2, 26);
+      bctx.fillText('Simulasi Dampak Berantai Ekosistem:', cw / 2, 24);
 
-      const nodes = [
-        { e: '🌱', n: 'Rumput', st: opt.quizCorrect ? '📈 Naik' : '?' },
-        { e: '🦗', n: 'Belalang', st: opt.quizCorrect ? '📉 Turun' : '?' },
-        { e: '🐸', n: 'Katak', st: opt.quizCorrect ? '📈 Meledak!' : '?' },
-        { e: '🐍', n: 'Ular', st: '❌ PUNAH' },
-        { e: '🦅', n: 'Elang', st: opt.quizCorrect ? '📉 Lapar' : '?' }
+      const statusSets = [
+        [
+          { st: '▲ Stabil', col: '#2e7d32' },
+          { st: '▲ Naik', col: '#ef6c00' },
+          { st: '▼ Terancam', col: '#c62828' },
+          { st: '✗ Punah', col: '#b71c1c' },
+          { st: '▼ Kelaparan', col: '#c62828' }
+        ],
+        [
+          { st: '▼ Rusak', col: '#c62828' },
+          { st: '▼ Turun', col: '#c62828' },
+          { st: '▼ Kelaparan', col: '#c62828' },
+          { st: '▼ Turun', col: '#ef6c00' },
+          { st: '▼ Kelaparan', col: '#c62828' }
+        ],
+        [
+          { st: '✗ Habis', col: '#b71c1c' },
+          { st: '▼ Kelaparan', col: '#c62828' },
+          { st: '▼ Kelaparan', col: '#c62828' },
+          { st: '▼ Kelaparan', col: '#c62828' },
+          { st: '▼ Kelaparan', col: '#c62828' }
+        ]
       ];
+      const activeSet = statusSets[bookSubSelection] || statusSets[0];
+      const nodes = [
+        { spr: 'grass', e: '🌱', n: 'Rumput' },
+        { spr: 'hopper', e: '🦗', n: 'Belalang' },
+        { spr: 'frog', e: '🐸', n: 'Katak' },
+        { spr: 'snake', e: '🐍', n: 'Ular' },
+        { spr: 'eagle', e: '🦅', n: 'Elang' }
+      ];
+
+      const pulse = 0.78 + 0.22 * Math.sin(nowSec * 4.5);
       nodes.forEach((nd, i) => {
         const nx = 30 + i * 54;
-        const ny = 92;
-        bctx.fillStyle = i === 3 ? '#ffebee' : '#e8f5e9';
-        bctx.strokeStyle = i === 3 ? '#e53935' : '#43a047';
+        const ny = 86;
+        const stInfo = activeSet[i];
+        const isCritical = stInfo.col === '#b71c1c' || stInfo.col === '#c62828';
+
+        // Arrow (→) between nodes
+        if (i < nodes.length - 1) {
+          bctx.fillStyle = '#8d6e63';
+          bctx.font = 'bold 14px Segoe UI, sans-serif';
+          bctx.fillText('→', nx + 27, ny + 5);
+        }
+
+        bctx.fillStyle = isCritical ? '#ffebee' : '#e8f5e9';
+        bctx.strokeStyle = stInfo.col;
         bctx.lineWidth = 2;
         bctx.beginPath();
-        bctx.arc(nx, ny, 21, 0, Math.PI * 2);
+        bctx.arc(nx, ny, 22, 0, Math.PI * 2);
         bctx.fill();
         bctx.stroke();
-        bctx.font = '18px Segoe UI Emoji, sans-serif';
-        bctx.fillText(nd.e, nx, ny + 6);
+
+        const sprImg = window.EcoSprites && window.EcoSprites.get ? window.EcoSprites.get(nd.spr, 3) : null;
+        if (sprImg) {
+          bctx.save();
+          bctx.imageSmoothingEnabled = false;
+          bctx.drawImage(sprImg, nx - 16, ny - 16, 32, 32);
+          bctx.restore();
+        } else {
+          bctx.font = '18px Segoe UI Emoji, sans-serif';
+          bctx.fillText(nd.e, nx, ny + 6);
+        }
+
         bctx.font = 'bold 9.5px Segoe UI, sans-serif';
         bctx.fillStyle = '#3b2618';
-        bctx.fillText(nd.n, nx, ny + 35);
-        bctx.fillStyle = i === 3 ? '#c62828' : '#2e7d32';
-        bctx.fillText(nd.st, nx, ny + 48);
+        bctx.fillText(nd.n, nx, ny + 34);
+
+        bctx.save();
+        bctx.globalAlpha = pulse;
+        bctx.fillStyle = stInfo.col;
+        bctx.font = 'bold 9px Segoe UI, sans-serif';
+        bctx.fillText(stInfo.st, nx, ny + 47);
+        bctx.restore();
       });
     }
   }
@@ -2193,11 +2247,16 @@
   });
 
   bookNextBtn.addEventListener('click', () => {
+    window.EcoAudio.playDrop();
     if (bookPage < BOOK_CHAPTERS.length - 1) {
-      window.EcoAudio.playDrop();
       bookPage++;
       bookSubSelection = 0;
       renderBookPage();
+    } else {
+      materiModal.classList.add('hidden');
+      if (!mainMenu.classList.contains('hidden')) {
+        menuPlayBtn.click();
+      }
     }
   });
 
