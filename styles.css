@@ -3450,8 +3450,53 @@ body {
   color: #020617;
 }
 
-/* ============================================================================
-   Audit Enhancements: Learning Path, Live Trophic Pyramid, Loan & Gesture Hint
+/* Lively Main Menu Animations */
+@keyframes menuFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes vineSway {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(5deg); }
+}
+
+@keyframes primaryBtnGlow {
+  0%, 100% { box-shadow: 0 5px 0 #1f4d18, 0 0 0 0 rgba(102, 187, 106, 0.4); }
+  50% { box-shadow: 0 5px 0 #1f4d18, 0 0 16px 3px rgba(102, 187, 106, 0.55); }
+}
+
+.ecoborn-plaque {
+  animation: menuFloat 3.6s ease-in-out infinite;
+}
+
+.plaque-vine {
+  animation: vineSway 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.wood-btn {
+  transition: transform 0.14s cubic-bezier(0.22, 1.2, 0.36, 1), filter 0.14s ease, box-shadow 0.14s ease;
+}
+
+.wood-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.08);
+}
+
+.primary-wood-btn {
+  animation: primaryBtnGlow 2.4s ease-in-out infinite;
+}
+
+.ecoborn-logo-img {
+  display: block;
+  max-width: 260px;
+  width: 82%;
+  height: auto;
+  margin: 0 auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 3px 0 rgba(59, 38, 24, 0.55));
+}
    ============================================================================ */
 .menu-learning-path {
   display: inline-flex;

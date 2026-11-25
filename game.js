@@ -2011,8 +2011,10 @@
     const opt = chapter.options[bookSubSelection] || chapter.options[0];
 
     if (bookPage === 0) {
-      // Chapter 1: Live animated creature/plant on meadow stage + chain mini-icons
-      const bg = getBiomeBg(window.BIOMES.grassland);
+      // Modul 1: Komponen Abiotik & Kecocokan Habitat (Bioma Showcase)
+      const bKey = opt.biomeId || 'grassland';
+      const biomeObj = window.BIOMES[bKey] || window.BIOMES.grassland;
+      const bg = getBiomeBg(biomeObj);
       if (bg && bg.loaded) {
         bctx.drawImage(bg.img, 0, 0, cw, ch);
       } else {
@@ -2020,38 +2022,75 @@
         bctx.fillRect(0, 0, cw, ch);
       }
 
-      // Spotlight circle
-      bctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+      // Spotlight circle + native creature sprite
+      bctx.fillStyle = 'rgba(255, 255, 255, 0.36)';
       bctx.beginPath();
-      bctx.arc(cw / 2, ch * 0.56, 52, 0, Math.PI * 2);
+      bctx.arc(cw / 2, ch * 0.54, 48, 0, Math.PI * 2);
       bctx.fill();
 
-      if (opt.isAnim) {
-        const anim = window.EcoSprites.getAnimFrame(opt.sprite, 'move', nowSec);
-        if (anim) {
-          const sz = opt.sprite === 'eagle' ? 92 : 76;
-          bctx.save();
-          bctx.imageSmoothingEnabled = true;
-          bctx.imageSmoothingQuality = 'high';
-          bctx.drawImage(anim.img, anim.sx, anim.sy, anim.sw, anim.sh, (cw - sz) / 2, ch * 0.56 - sz / 2, sz, sz);
-          bctx.restore();
-        }
-      } else {
-        const spr = window.EcoSprites.get(opt.sprite, 4);
-        if (spr) {
-          const sz = 72;
-          bctx.drawImage(spr, (cw - sz) / 2, ch * 0.56 - sz / 2, sz, sz);
-        }
+      const nativeSpr = bKey === 'desert' ? 'cactus' : bKey === 'swamp' ? 'orangutan' : 'grass';
+      const sprImg = window.EcoSprites.get(nativeSpr, 4);
+      if (sprImg) {
+        bctx.save();
+        bctx.imageSmoothingEnabled = false;
+        bctx.drawImage(sprImg, cw / 2 - 36, ch * 0.54 - 36, 72, 72);
+        bctx.restore();
       }
 
-      bctx.fillStyle = 'rgba(42, 22, 11, 0.82)';
+      bctx.fillStyle = 'rgba(42, 22, 11, 0.85)';
       bctx.fillRect(0, ch - 28, cw, 28);
       bctx.fillStyle = '#fff3c4';
       bctx.font = 'bold 11.5px Segoe UI, sans-serif';
       bctx.textAlign = 'center';
-      bctx.fillText(opt.role, cw / 2, ch - 10);
+      bctx.fillText(opt.label, cw / 2, ch - 10);
     } else if (bookPage === 1) {
-      // Chapter 2: Interactive 5-tier Energy Pyramid (16:8:4:2:1 / 10,000 -> 1 kcal)
+      // Modul 2: Rantai Makanan vs Jaring-Jaring Makanan Lintas Bioma
+      bctx.fillStyle = '#f4fbf6';
+      bctx.fillRect(0, 0, cw, ch);
+      bctx.font = 'bold 11.5px Segoe UI, sans-serif';
+      bctx.textAlign = 'center';
+      bctx.fillStyle = '#2e4a31';
+      bctx.fillText('Jaring-Jaring Makanan Lintas Bioma', cw / 2, 22);
+
+      const webNodes = [
+        { spr: 'grass', x: 52, y: 148, lbl: 'Rumput' },
+        { spr: 'hopper', x: 140, y: 148, lbl: 'Belalang' },
+        { spr: 'frog', x: 228, y: 148, lbl: 'Katak' },
+        { spr: 'snake', x: 100, y: 74, lbl: 'Ular' },
+        { spr: 'eagle', x: 205, y: 66, lbl: 'Elang' }
+      ];
+      // Draw food web arrows
+      const edges = [[0, 1], [1, 2], [2, 3], [3, 4], [2, 4], [1, 3]];
+      bctx.strokeStyle = '#66bb6a';
+      bctx.lineWidth = 2;
+      edges.forEach(([a, b]) => {
+        bctx.beginPath();
+        bctx.moveTo(webNodes[a].x, webNodes[a].y);
+        bctx.lineTo(webNodes[b].x, webNodes[b].y);
+        bctx.stroke();
+      });
+
+      webNodes.forEach((wn) => {
+        bctx.fillStyle = '#ffffff';
+        bctx.strokeStyle = '#2e7d32';
+        bctx.lineWidth = 2;
+        bctx.beginPath();
+        bctx.arc(wn.x, wn.y, 20, 0, Math.PI * 2);
+        bctx.fill();
+        bctx.stroke();
+        const s = window.EcoSprites.get(wn.spr, 3);
+        if (s) {
+          bctx.save();
+          bctx.imageSmoothingEnabled = false;
+          bctx.drawImage(s, wn.x - 14, wn.y - 14, 28, 28);
+          bctx.restore();
+        }
+        bctx.fillStyle = '#3b2618';
+        bctx.font = 'bold 9px Segoe UI, sans-serif';
+        bctx.fillText(wn.lbl, wn.x, wn.y + 29);
+      });
+    } else if (bookPage === 2) {
+      // Modul 3: Interactive 5-tier Energy Pyramid (16:8:4:2:1 / 10,000 -> 1 kcal)
       bctx.fillStyle = '#f5faf5';
       bctx.fillRect(0, 0, cw, ch);
       const tiers = [
@@ -2077,36 +2116,6 @@
         bctx.textAlign = 'center';
         bctx.fillText(tr.name, cw / 2, y + 19);
       });
-    } else if (bookPage === 2) {
-      // Chapter 3: Live Biome Preview (Background + Weather + Creatures)
-      const bDef = window.BIOMES[opt.biomeId] || window.BIOMES.grassland;
-      const bg = getBiomeBg(bDef);
-      if (bg && bg.loaded) {
-        bctx.drawImage(bg.img, 0, 0, cw, ch);
-      } else {
-        bctx.fillStyle = bDef.fallbackColors.skyTop;
-        bctx.fillRect(0, 0, cw, ch);
-      }
-      const cSpr = window.EcoSprites.get(bDef.weatherType === 'sun' ? 'sun_cloud' : 'storm', 3);
-      if (cSpr) {
-        const cx = cw * 0.5 + Math.sin(nowSec * 1.4) * 35;
-        bctx.drawImage(cSpr, cx - 28, 14, 56, 56);
-        bctx.fillStyle = bDef.weatherType === 'sun' ? '#ffee58' : '#4fc3f7';
-        for (let r = 0; r < 6; r++) {
-          const rx = cx - 18 + r * 7;
-          const ry = 60 + ((nowSec * 90 + r * 19) % 75);
-          bctx.fillRect(rx, ry, 2, 7);
-        }
-      }
-      const pSpr = window.EcoSprites.get(bDef.chainOrder[0], 3);
-      if (pSpr) {
-        bctx.drawImage(pSpr, cw * 0.25 - 22, ch * 0.78 - 34, 44, 44);
-        bctx.drawImage(pSpr, cw * 0.72 - 22, ch * 0.78 - 34, 44, 44);
-      }
-      const hAnim = window.EcoSprites.getAnimFrame(bDef.chainOrder[1], 'move', nowSec);
-      if (hAnim) {
-        bctx.drawImage(hAnim.img, hAnim.sx, hAnim.sy, hAnim.sw, hAnim.sh, cw * 0.48 - 24, ch * 0.78 - 38, 48, 48);
-      }
     } else if (bookPage === 3) {
       // Chapter 4: Interactive Symbiosis Diagram (+/+, +/0, +/-, -/-, -/0)
       bctx.fillStyle = '#f3fbf7';
