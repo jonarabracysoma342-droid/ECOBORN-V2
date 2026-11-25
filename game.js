@@ -2042,12 +2042,20 @@
       bctx.fill();
 
       const nativeSpr = bKey === 'desert' ? 'cactus' : bKey === 'swamp' ? 'orangutan' : 'grass';
-      const sprImg = window.EcoSprites.get(nativeSpr, 4);
-      if (sprImg) {
+      const animF = window.EcoSprites.getAnimFrame ? window.EcoSprites.getAnimFrame(nativeSpr, 'idle', 0) : null;
+      if (animF) {
         bctx.save();
         bctx.imageSmoothingEnabled = false;
-        bctx.drawImage(sprImg, cw / 2 - 36, ch * 0.54 - 36, 72, 72);
+        bctx.drawImage(animF.img, animF.sx, animF.sy, animF.sw, animF.sh, cw / 2 - 38, ch * 0.54 - 38, 76, 76);
         bctx.restore();
+      } else {
+        const sprImg = window.EcoSprites.get(nativeSpr, 4);
+        if (sprImg) {
+          bctx.save();
+          bctx.imageSmoothingEnabled = false;
+          bctx.drawImage(sprImg, cw / 2 - 36, ch * 0.54 - 36, 72, 72);
+          bctx.restore();
+        }
       }
 
       bctx.fillStyle = 'rgba(42, 22, 11, 0.85)';
