@@ -1859,165 +1859,112 @@
 
   const BOOK_CHAPTERS = [
     {
-      tag: 'BAB 1 DARI 5 • KONSEP DASAR',
-      title: 'Rantai Makanan & Tingkat Trofik',
-      body: `<p><strong>Rantai makanan</strong> adalah peristiwa makan dan dimakan antar makhluk hidup dengan urutan tertentu. Setiap posisi organisme disebut <strong>tingkat trofik</strong>.</p>
-      <p style="margin-top:5px;">Klik salah satu makhluk hidup di <strong>halaman kiri</strong> untuk mengamati animasi dan peran ekologisnya!</p>`,
+      tag: 'MODUL 1 DARI 5 • KOMPONEN ABIOTIK & HABITAT',
+      title: 'Komponen Abiotik & Kecocokan Habitat',
+      body: `<p><strong>Komponen Abiotik</strong> (tak hidup) seperti <strong>suhu, air, jenis tanah, dan cahaya matahari</strong> menentukan makhluk hidup mana yang bisa bertahan di suatu bioma.</p><p><strong>🎮 Kaitan dengan Game:</strong> Setiap satwa punya habitat aslinya. Jika ditempatkan di bioma yang tidak cocok, satwa akan stres atau mati!</p>`,
       options: [
         {
-          label: '🌱 Produsen',
-          sprite: 'grass',
-          isAnim: false,
-          role: 'Tingkat Trofik 1 (Autotrof)',
-          detail: '<strong>🌱 Produsen (Rumput / Lumut Air / Kaktus):</strong> Organisme autotrof yang menghasilkan makanan sendiri melalui fotosintesis dengan bantuan air hujan dan cahaya matahari. Tanpa produsen, energi tidak dapat masuk ke ekosistem.'
-        },
-        {
-          label: '🦗 Konsumen I',
-          sprite: 'hopper',
-          isAnim: true,
-          role: 'Tingkat Trofik 2 (Herbivora)',
-          detail: '<strong>🦗 Konsumen Primer (Belalang / Kelinci / Tikus Pasir / Serangga Air):</strong> Hewan herbivora pemakan tumbuhan. Mereka memindahkan energi dari produsen ke tingkat konsumen berikutnya.'
-        },
-        {
-          label: '🐸 Konsumen II',
-          sprite: 'frog',
-          isAnim: true,
-          role: 'Tingkat Trofik 3 (Karnivora Kecil)',
-          detail: '<strong>🐸 Konsumen Sekunder (Katak):</strong> Karnivora pemangsa herbivora. Kehadiran katak mencegah ledakan populasi serangga agar tumbuhan tidak habis.'
-        },
-        {
-          label: '🐍 Konsumen III',
-          sprite: 'snake',
-          isAnim: true,
-          role: 'Tingkat Trofik 4 (Karnivora Menengah)',
-          detail: '<strong>🐍 Konsumen Tersier (Ular):</strong> Predator menengah yang memangsa konsumen sekunder dan menjaga keseimbangan rantai makanan sebelum mencapai predator puncak.'
-        },
-        {
-          label: '🦅 Puncak',
-          sprite: 'eagle',
-          isAnim: true,
-          role: 'Tingkat Trofik 5 (Apex Predator)',
-          detail: '<strong>🦅 Predator Puncak (Elang / Bangau):</strong> Konsumen teratas yang tidak memiliki pemangsa alami di ekosistemnya.'
-        },
-        {
-          label: '🍄 Pengurai',
-          sprite: 'mushroom',
-          isAnim: false,
-          role: 'Dekomposer (Penutup Siklus)',
-          detail: '<strong>🍄 Pengurai (Jamur):</strong> Menguraikan organisme yang mati (setelah kelaparan 60 detik) kembali menjadi zat hara untuk menyuburkan produsen baru!'
-        }
-      ]
-    },
-    {
-      tag: 'BAB 2 DARI 5 • ALIRAN ENERGI',
-      title: 'Piramida Makanan & Hukum 10%',
-      body: `<p>Mengapa di alam jumlah <strong>Rumput</strong> harus jauh lebih banyak daripada <strong>Elang</strong>? Karena menurut <strong>Hukum 10% Lindeman</strong>, hanya sekitar <strong>10% energi</strong> yang berpindah ke tingkat trofik di atasnya (90% dipakai bernapas, bergerak, dan terbuang sebagai panas).</p>`,
-      options: [
-        {
-          label: '🌱 Dasar (10.000 kkal)',
-          tier: 0,
-          detail: '<strong>Tingkat 1 — Produsen (Rasio 16 | 10.000 kkal):</strong> Menyimpan energi terbesar langsung dari matahari. Harus memiliki populasi paling banyak untuk menopang seluruh piramida.'
-        },
-        {
-          label: '🦗 Herbivora (1.000 kkal)',
-          tier: 1,
-          detail: '<strong>Tingkat 2 — Konsumen Primer (Rasio 8 | 1.000 kkal):</strong> Menerima 10% energi dari produsen. Di Ecoborn, minimal 3 Rumput memicu hadirnya Belalang secara alami.'
-        },
-        {
-          label: '🐸 Sekunder (100 kkal)',
-          tier: 2,
-          detail: '<strong>Tingkat 3 — Konsumen Sekunder (Rasio 4 | 100 kkal):</strong> Menerima 10% energi dari herbivora. Populasi idealnya setengah dari populasi belalang.'
-        },
-        {
-          label: '🐍 Tersier (10 kkal)',
-          tier: 3,
-          detail: '<strong>Tingkat 4 — Konsumen Tersier (Rasio 2 | 10 kkal):</strong> Energi makin menyusut sehingga ekosistem hanya mampu mendukung sedikit ular.'
-        },
-        {
-          label: '🦅 Puncak (1 kkal)',
-          tier: 4,
-          detail: '<strong>Tingkat 5 — Predator Puncak (Rasio 1 | 1 kkal):</strong> Hanya 1 Elang yang dibutuhkan untuk menyeimbangkan 16 Rumput, 8 Belalang, 4 Katak, dan 2 Ular (Rasio 16:8:4:2:1).'
-        }
-      ]
-    },
-    {
-      tag: 'BAB 3 DARI 5 • ADAPTASI BIOMA',
-      title: 'Siklus Cuaca & 4 Bioma Ekosistem',
-      body: `<p>Setiap bioma memiliki kondisi iklim, cara turunnya hujan/cahaya, serta adaptasi makhluk hidup yang berbeda. Klik bioma di <strong>halaman kiri</strong> untuk melihat simulasi cuacanya!</p>`,
-      options: [
-        {
-          label: '🌾 Padang Rumput',
+          label: '🌾 Tanah Subur & Air',
           biomeId: 'grassland',
-          detail: '<strong>🌾 Bioma Padang Rumput (Mudah • Harga 1.0×):</strong> 2 Awan Putih bergabung menjadi Awan Hujan yang menumbuhkan Rumput (tahap 1–3). Rantai: <em>Rumput → Belalang → Katak → Ular → Elang</em>.'
+          detail: '<strong>🌾 Padang Rumput & Sawah:</strong> Cahaya matahari cukup, tanah lembab, dan air sungai melimpah. Cocok untuk Rumput, Padi, Belalang, Katak, dan Ikan Sungai.'
         },
         {
-          label: '🌴 Hutan Tropis',
-          biomeId: 'tropical',
-          detail: '<strong>🌴 Bioma Tropis (Mudah • Harga 0.9×):</strong> Curah hujan tinggi dan subur. 2 Awan Putih menurunkan hujan untuk Rumput Tropis. Rantai: <em>Rumput → Kelinci → Ular Tropis → Elang</em>.'
-        },
-        {
-          label: '🌿 Rawa Gambut',
-          biomeId: 'swamp',
-          detail: '<strong>🌿 Bioma Rawa (Sedang • Harga 1.3×):</strong> 2 Awan Putih bergabung menjadi <strong>Awan Matahari 🌤️</strong>! Cahayanya menyinari <strong>Spora ✨</strong> di air hingga tumbuh menjadi <strong>Lumut Air</strong>. Rantai: <em>Lumut Air → Serangga Air → Katak → Ular Air → Bangau</em>.'
-        },
-        {
-          label: '🏜️ Gurun Pasir',
+          label: '🏜️ Suhu Panas & Kering',
           biomeId: 'desert',
-          detail: '<strong>🏜️ Bioma Gurun (Sulit • Harga 2.0×):</strong> Sangat kering! Butuh <strong>4 Awan Putih sekaligus</strong> untuk memicu hujan yang menumbuhkan <strong>Kaktus 🌵</strong>. Rantai: <em>Kaktus → Tikus Pasir → Ular Gurun → Elang Gurun</em>.'
+          detail: '<strong>🏜️ Gurun Oasis:</strong> Suhu tinggi dan air sangat langka. Hanya tumbuhan beradaptasi khusus (Kaktus 🌵) serta Tikus Pasir & Ular Gurun yang tahan hidup di sini.'
+        },
+        {
+          label: '🪵 Lahan Gambut Basah',
+          biomeId: 'swamp',
+          detail: '<strong>🪵 Gambut & Rawa:</strong> Tanah gambut menyimpan air dan karbon sangat besar. <strong>Studi Kasus Game:</strong> Jika gambut mengering saat kemarau, kabut asap muncul dan mengancam Orangutan & Enggang!'
         }
       ]
     },
     {
-      tag: 'BAB 4 DARI 5 • SIMBIOSIS DI ALAM',
-      title: 'Simbiosis & Pola Interaksi Ekosistem',
-      body: `<p>Selain rantai makanan, makhluk hidup di alam membentuk hubungan erat yang disebut <strong>Simbiosis</strong>. Klik jenis interaksi di <strong>halaman kiri</strong> untuk melihat simulasi & pengaruhnya (+ / 0 / -):</p>`,
+      tag: 'MODUL 2 DARI 5 • JARING-JARING MAKANAN',
+      title: 'Rantai Makanan vs. Jaring Lintas Bioma',
+      body: `<p><strong>Rantai makanan</strong> adalah jalur makan-memakan tunggal, sedangkan <strong>jaring-jaring makanan</strong> adalah gabungan banyak rantai yang saling terhubung <strong>lintas bioma</strong> (daratan & perairan).</p>`,
+      options: [
+        {
+          label: '🌿 Rantai Tunggal',
+          trophic: 'producer',
+          detail: '<strong>🌿 Alur Tunggal:</strong> Contoh sederhana di Sawah: <em>Padi → Belalang → Katak → Ular → Elang</em>. Jika satu mata rantai putus, jalur ini langsung terhenti.'
+        },
+        {
+          label: '🕸️ Lintas 5 Bioma',
+          trophic: 'apex',
+          detail: '<strong>🕸️ Kaitan dengan Game:</strong> Di Pulau 3D, garis panah menghubungkan antar-bioma! <strong>Elang (🦅)</strong> dari perbukitan bisa memangsa Ular di hutan, Katak di sawah, maupun Ikan di sungai.'
+        },
+        {
+          label: '❓ Kasus: Katak Punah',
+          trophic: 'carnivore',
+          detail: '<strong>❓ Studi Kasus Game:</strong> <em>"Apa yang terjadi jika semua katak di sawah punah?"</em> Populasi <strong>Belalang melonjak</strong> dan merusak padi, sedangkan Ular & Elang kehilangan salah satu sumber makanannya!'
+        }
+      ]
+    },
+    {
+      tag: 'MODUL 3 DARI 5 • ATURAN 10% ENERGI',
+      title: 'Piramida Jumlah & Hukum Aliran Energi',
+      body: `<p>Saat makhluk hidup dimakan, hanya sekitar <strong>10% energi</strong> yang diteruskan ke tingkat trofik di atasnya (90% hilang sebagai panas & gerak). Karena itu ekosistem sehat berbentuk <strong>piramida melebar di bawah</strong>.</p>`,
+      options: [
+        {
+          label: '🌱 Produsen (100%)',
+          trophic: 'producer',
+          detail: '<strong>🌱 Dasar Piramida (Produsen):</strong> Rumput, Padi, & Pohon menangkap energi matahari. <strong>Strategi Game:</strong> Tanam produsen jauh lebih banyak agar Piramida Trofik Live di HUD 3D tidak menyala merah!'
+        },
+        {
+          label: '🦗 Konsumen I (10%)',
+          trophic: 'herbivore',
+          detail: '<strong>🦗 Herbivora (10% Energi):</strong> Belalang, Kelinci, dan Tikus hanya memperoleh ~10% energi dari tumbuhan yang dimakannya, sehingga jumlahnya harus lebih sedikit daripada produsen.'
+        },
+        {
+          label: '🦅 Puncak (0.1%)',
+          trophic: 'apex',
+          detail: '<strong>🦅 Predator Puncak (0.1% Energi):</strong> Elang & Bangau berada di puncak piramida. <strong>Studi Kasus Game:</strong> Jika kamu menaruh terlalu banyak Elang dibanding mangsanya, piramida terbalik dan Elang cepat kelaparan!'
+        }
+      ]
+    },
+    {
+      tag: 'MODUL 4 DARI 5 • POLA INTERAKSI',
+      title: 'Predasi, Kompetisi & Simbiosis',
+      body: `<p>Organisme di alam berinteraksi melalui <strong>Predasi</strong> (pemangsa-mangsa), <strong>Kompetisi</strong> (rebutan makan/wilayah), dan <strong>Simbiosis</strong> (hidup berdampingan erat).</p>`,
       options: [
         {
           label: '🤝 Mutualisme (+/+)',
           symType: 'mutualism',
-          detail: '<strong>🤝 Simbiosis Mutualisme (+ / +):</strong> Kedua organisme saling diuntungkan! Contoh di Ecoborn: (1) <strong>Jamur Mikoriza (🍄) & Akar Tanaman</strong> saling bertukar mineral dan karbon untuk mempercepat tumbuh produsen; (2) <strong>Belalang/Serangga Penyerbuk</strong> membantu polinasi bunga; (3) <strong>Bangau (🦩)</strong> membersihkan kutu parasit pada satwa rawa.'
+          detail: '<strong>🤝 Saling Menguntungkan (+/+):</strong> Jamur Mikoriza (🍄) menyuburkan akar pohon, Belalang membantu penyerbukan, dan Bangau membersihkan parasit pada satwa lain.'
         },
         {
-          label: '🛡️ Komensalisme (+/0)',
+          label: '🛡️ Komensalisme & 🦠 Parasit',
           symType: 'commensalism',
-          detail: '<strong>🛡️ Simbiosis Komensalisme (+ / 0):</strong> Satu pihak diuntungkan (+), sedangkan pihak lain tidak dirugikan maupun diuntungkan (0). Contoh di Ecoborn: <strong>Katak (🐸) & Kelinci (🐇)</strong> berlindung/berkamuflase di bawah naungan <strong>Pohon 3D (🌲)</strong> dari pantauan predator, serta <strong>Elang (🦅)</strong> yang bertengger di puncak pohon.'
+          detail: '<strong>🛡️ (+/0) vs 🦠 (+/-):</strong> Katak & Kelinci berlindung di bawah pohon (Komensalisme). Sebaliknya, benalu/kutu melemahkan inangnya (Parasitisme) hingga dibersihkan oleh interaksi Mutualisme.'
         },
         {
-          label: '🦠 Parasitisme (+/-)',
-          symType: 'parasitism',
-          detail: '<strong>🦠 Simbiosis Parasitisme (+ / -):</strong> Satu pihak untung (parasit +) dan pihak lain rugi (inang -). Contoh di Ecoborn: <strong>Benalu & Cacing/Kutu Parasit (🦠)</strong> menempel pada pohon atau satwa inang, menyerap nutrisi dan menurunkan HP inang hingga dibersihkan oleh interaksi Mutualisme.'
-        },
-        {
-          label: '⚔️ Kompetisi (-/-)',
+          label: '⚔️ Kompetisi ("Kalah Saing")',
           symType: 'competition',
-          detail: '<strong>⚔️ Kompetisi Interspesifik (- / -):</strong> Dua spesies pada tingkat trofik yang sama (misal <strong>Belalang vs Kelinci</strong>, atau <strong>Ular vs Elang</strong>) saling bersaing memperebutkan sumber makanan terbatas di area yang sama.'
-        },
-        {
-          label: '🚫 Amensalisme (-/0)',
-          symType: 'amensalism',
-          detail: '<strong>🚫 Simbiosis Amensalisme / Alelopati (- / 0):</strong> Satu organisme terhambat pertumbuhannya (-), sedangkan organisme penghasil zat tidak diuntungkan maupun dirugikan (0). Contoh: Pohon pinus/kaktus tua mengeluarkan senyawa alelopati yang menghambat tunas rumput liar tumbuh tepat di bawah batangnya.'
+          detail: '<strong>⚔️ Kaitan dengan Game:</strong> Saat hewan mengungsi ke bioma baru, mereka berebut makanan dengan hewan asli. Jika kalah berebut sumber daya, muncul status <strong>"Kalah Bersaing"</strong> di kartu jurnal!'
         }
       ]
     },
     {
-      tag: 'BAB 5 DARI 5 • SIMULASI KASUS HOTS',
-      title: 'Uji Pemahaman: Efek Domino Ekologi',
-      body: `<p><strong>Studi Kasus:</strong> Di suatu ekosistem Padang Rumput yang seimbang, seluruh <strong>Ular (🐍)</strong> tiba-tiba punah akibat diburu manusia. Apa dampak berantai (<em>trophic cascade</em>) yang paling tepat terjadi selanjutnya?</p>`,
+      tag: 'MODUL 5 DARI 5 • DINAMIKA & BENCANA',
+      title: 'Dinamika Populasi, Seleksi Alam & Bencana',
+      body: `<p>Populasi berubah karena <strong>kelahiran, kematian, dan migrasi</strong>. Makhluk hidup yang mampu <strong>beradaptasi</strong> akan lolos seleksi alam, sedangkan kerusakan habitat memicu <strong>efek domino</strong>.</p>`,
       options: [
         {
-          label: 'A. Katak naik, Belalang turun',
+          label: '🧬 Adaptasi vs Punah',
+          symType: 'amensalism',
+          detail: '<strong>🧬 Seleksi Alam di Game:</strong> Ketika bioma asalnya rusak ≥ 75%, satwa bermigrasi. Yang berhasil menyesuaikan diri mendapat tanda <strong>🧬 BERADAPTASI!</strong>, sedangkan yang gagal akan tersingkir.'
+        },
+        {
+          label: '⚠️ Efek Domino Bencana',
+          biomeId: 'tropical',
+          detail: '<strong>⚠️ Kaitan Tombol Bencana:</strong> Pestisida membunuh herbivora → predator kelaparan. Monokultur sawit & gambut kering → banjir & kabut asap. Gunakan <strong>Awan Hujan, Pohon Alami, atau Sekat Kanal</strong> untuk memulihkannya!'
+        },
+        {
+          label: '❓ Kasus: Produsen Habis',
           quizCorrect: true,
-          detail: '<strong>✅ TEPAT SEKALI! (Analisis HOTS Benar):</strong> Tanpa Ular sebagai pemangsa, populasi <strong>Katak (🐸) meningkat tajam</strong>. Akibatnya Katak memangsa lebih banyak <strong>Belalang (🦗) hingga anjlok</strong>, sementara <strong>Elang (🦅) kehilangan mangsa utamanya</strong>!'
-        },
-        {
-          label: 'B. Elang makin banyak',
-          quizCorrect: false,
-          detail: '<strong>❌ Kurang Tepat:</strong> Ular adalah makanan utama Elang di rantai makanan ini. Jika Ular punah, Elang justru kekurangan makanan dan terancam mati kelaparan.'
-        },
-        {
-          label: 'C. Katak ikut punah',
-          quizCorrect: false,
-          detail: '<strong>❌ Kurang Tepat:</strong> Katak tidak memakan Ular, melainkan dimangsa oleh Ular. Hilangnya pemangsa justru membuat populasi Katak melonjak dalam jangka pendek.'
+          detail: '<strong>❓ Studi Kasus Game:</strong> <em>"Apa yang terjadi jika seluruh rumput & pohon dihapus?"</em> Semua tingkat trofik di atasnya runtuh beruntun! Gunakan fitur <strong>🆘 Pinjam Koin</strong> jika kehabisan dana untuk menanam produsen kembali.'
         }
       ]
     }
