@@ -71,6 +71,10 @@
   const hudIsoBtn = document.getElementById('hud-iso-btn');
   const menuPlayBtn = document.getElementById('menu-play-btn');
   const menuIsoBtn = document.getElementById('menu-iso-btn');
+  const menuBiokartBtn = document.getElementById('menu-biokart-btn');
+  const biokartModal = document.getElementById('biokart-modal');
+  const biokartFrame = document.getElementById('biokart-frame');
+  const biokartCloseBtn = document.getElementById('biokart-close-btn');
   const menuMateriBtn = document.getElementById('menu-materi-btn');
   const menuSettingsBtn = document.getElementById('menu-settings-btn');
   const menuSoundBtn = document.getElementById('menu-sound-btn');
@@ -1708,6 +1712,21 @@
   menuIsoBtn.addEventListener('click', openIsoLab);
   hudIsoBtn.addEventListener('click', openIsoLab);
 
+  if (menuBiokartBtn && biokartModal && biokartFrame) {
+    menuBiokartBtn.addEventListener('click', () => {
+      window.EcoAudio.playDrop();
+      biokartFrame.src = 'biokart/index.html';
+      biokartModal.classList.remove('hidden');
+    });
+  }
+  if (biokartCloseBtn && biokartModal && biokartFrame) {
+    biokartCloseBtn.addEventListener('click', () => {
+      window.EcoAudio.playDrop();
+      biokartModal.classList.add('hidden');
+      biokartFrame.src = 'about:blank';
+    });
+  }
+
   isoCloseBtn.addEventListener('click', () => {
     isoModal.classList.add('hidden');
     isoDisasterPopover.classList.add('hidden');
@@ -2249,7 +2268,8 @@
     menuSoundBtn.textContent = snd ? '🔊' : '🔇';
     soundBtn.textContent = snd ? '🔊' : '🔇';
     setLangToggle.textContent = state.lang === 'en' ? 'ENGLISH' : 'INDONESIA';
-    menuPlayBtn.textContent = state.lang === 'en' ? 'PLAY GAME' : 'MULAI BERMAIN';
+    menuPlayBtn.textContent = state.lang === 'en' ? '🌿 2D FOOD CHAIN WORLD' : '🌿 DUNIA 2D RANTAI MAKANAN';
+    if (menuBiokartBtn) menuBiokartBtn.textContent = '🏎️ BIOKART RACERS';
     menuMateriBtn.textContent = state.lang === 'en' ? 'STUDY BOOK' : 'MATERI';
     menuSettingsBtn.textContent = state.lang === 'en' ? 'SETTINGS' : 'PENGATURAN';
   }
