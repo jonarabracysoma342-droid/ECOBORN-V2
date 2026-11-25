@@ -48,6 +48,9 @@
   let selectedDockCard = null;
   let guidedCardIds = [];
   let guidedHintText = '';
+  let isoCoinDebt = 0;
+  let activeRecoveryKey = null;
+  let gestureHintTimer = null;
   let isPaintingWorld = false;
   let lastPaintTime = 0;
   let lastPaintedTile = null;
@@ -149,6 +152,14 @@
   let advisorPctEl = null;
   let advisorTipEl = null;
   let coinValEl = null;
+  let debtBadgeEl = null;
+  let loanBtnEl = null;
+  let pyrStatusEl = null;
+  let pyrRows = null;
+  let reflectModalEl = null;
+  let reflectBodyEl = null;
+  let reflectTipEl = null;
+  let gestureHintEl = null;
   let symSummaryEl = null;
   let symCntEls = { mutual: null, commensal: null, parasite: null, amensal: null };
   let symResetZoomBtn = null;
@@ -1636,7 +1647,7 @@
       t.hasSawit = true;
       sawitTiles.push(t);
     }
-    isoCoins += 35;
+    addIsoCoins(35);
     return true;
   }
 
@@ -2226,7 +2237,7 @@
         civ.food = Math.min(200, civ.food + farmTiles.length * 4 + Math.min(10, Math.floor(treeTiles.length / 15)));
         // Sawit monoculture passive coins vs flood hazard accumulation!
         if (sawitTiles.length > 0) {
-          isoCoins += sawitTiles.length * 12;
+          addIsoCoins(sawitTiles.length * 12);
         }
         if (sawitTiles.length >= 8) {
           civ.sawitYears++;
@@ -2692,9 +2703,8 @@
     isoCoinFrac += dt * (1.8 + symStats.mutual * 0.12);
     if (isoCoinFrac >= 1) {
       const gain = Math.floor(isoCoinFrac);
-      isoCoins += gain;
+      addIsoCoins(gain);
       isoCoinFrac -= gain;
-      if (coinValEl) coinValEl.textContent = String(isoCoins);
     if (yearLabelEl) {
       const season = worldYear % 2 === 1 ? 'Hujan' : 'Kemarau';
       yearLabelEl.textContent = `📅 Thn ${worldYear} • ${season}`;
@@ -5793,6 +5803,28 @@
     if (popSummaryEl) {
       popSummaryEl.textContent = `🌱${prodCount} • 🦗${herbCount} • 🐍${carnCount} • 🦅${apexCount}` + (humans.length > 0 ? ` • 🧑${stewardCount}/🔥${destCount}` : '');
     }
+    if (pyrRows) {
+      const maxPop = Math.max(1, prodCount, herbCount, carnCount, apexCount);
+      const tiers = [
+        { key: 'prod', val: prodCount, warn: prodCount === 0 && herbCount > 0 },
+        { key: 'herb', val: herbCount, warn: herbCount > prodCount },
+        { key: 'carn', val: carnCount, warn: carnCount > herbCount },
+        { key: 'apex', val: apexCount, warn: apexCount > carnCount }
+      ];
+      let anyWarn = false;
+      for (const tr of tiers) {
+        if (tr.warn) anyWarn = true;
+        const r = pyrRows[tr.key];
+        if (!r) continue;
+        if (r.cnt) r.cnt.textContent = String(tr.val);
+        if (r.fill) r.fill.style.width = `${Math.max(tr.val > 0 ? 10 : 3, Math.round((tr.val / maxPop) * 100))}%`;
+        if (r.row) r.row.classList.toggle('pyramid-warn', tr.warn);
+      }
+      if (pyrStatusEl) {
+        pyrStatusEl.textContent = anyWarn ? '⚠️ Piramida Terbalik!' : '⚖️ Seimbang';
+        pyrStatusEl.classList.toggle('warn', anyWarn);
+      }
+    }
     if (coinValEl) coinValEl.textContent = String(isoCoins);
     if (symCntEls.mutual) symCntEls.mutual.textContent = String(symStats.mutual);
     if (symCntEls.commensal) symCntEls.commensal.textContent = String(symStats.commensal);
@@ -5837,8 +5869,7 @@
         doneTotal++;
         if (!missionRewarded[mIdx]) {
           missionRewarded[mIdx] = true;
-          isoCoins += 80;
-          if (coinValEl) coinValEl.textContent = String(isoCoins);
+          addIsoCoins(80);
         }
       }
       const num = mIdx + 1;
@@ -6088,6 +6119,11 @@
         guidedCardIds = [];
         guidedHintText = '';
         renderDock();
+        if (activeRecoveryKey) {
+          const rk = activeRecoveryKey;
+          activeRecoveryKey = null;
+          showReflectionModal(rk);
+        }
       }
       tutPlacements++;
       const pElev = getTileLift(tile);
@@ -6252,6 +6288,11 @@
       guidedCardIds = [];
       guidedHintText = '';
       renderDock();
+      if (activeRecoveryKey) {
+        const rk = activeRecoveryKey;
+        activeRecoveryKey = null;
+        showReflectionModal(rk);
+      }
     }
     tutPlacements++;
     fpsAccum = ISO_FRAME_STEP;
@@ -6929,8 +6970,82 @@
     }
   };
 
+  function syncDebtBadge() {
+    if (coinValEl) coinValEl.textContent = String(isoCoins);
+    if (debtBadgeEl) {
+      if (isoCoinDebt > 0) {
+        debtBadgeEl.textContent = `Cicilan -${isoCoinDebt}`;
+        debtBadgeEl.classList.remove('hidden');
+      } else {
+        debtBadgeEl.classList.add('hidden');
+      }
+    }
+  }
+
+  function addIsoCoins(amount) {
+    if (!amount || amount <= 0) return;
+    let net = amount;
+    if (isoCoinDebt > 0) {
+      const installment = Math.min(isoCoinDebt, Math.max(1, Math.ceil(amount * 0.4)));
+      isoCoinDebt -= installment;
+      net -= installment;
+      if (isoCoinDebt === 0) {
+        logEvent('✅ Pinjaman koin darurat sudah lunas terbayar dari hasil ekosistem!');
+      }
+    }
+    isoCoins += Math.max(0, net);
+    syncDebtBadge();
+  }
+
+  function requestEmergencyCoinLoan() {
+    if (isoCoinDebt >= 160) {
+      logEvent('⚠️ Batas pinjaman darurat tercapai (maks 160 koin). Rawat produsen agar cicilan cepat lunas!');
+      return;
+    }
+    isoCoins += 80;
+    isoCoinDebt += 80;
+    syncDebtBadge();
+    renderDock();
+    logEvent('🆘 Pinjaman +80 🪙 diterima! Akan otomatis terpotong 40% saat kamu mendapat koin baru.');
+  }
+
+  const CONSEQUENCE_REFLECTIONS = {
+    pesticide: {
+      body: 'Dengan membasuh racun memakai Awan Hujan lalu menanam kembali Rumput, produsen kembali menyediakan energi untuk Herbivora (Belalang & Kelinci) sehingga rantai makanan tersambung lagi!',
+      tip: '💡 Konsep IPA: Pestisida membunuh organisme nontarget dan memutus aliran energi dari tingkat trofik I (Produsen).'
+    },
+    water_pollution: {
+      body: 'Air sungai yang kembali jernih menghentikan keracunan pada ikan, katak, dan bangau yang minum di tepian sungai.',
+      tip: '💡 Konsep IPA: Pencemaran air terakumulasi dalam tubuh makhluk hidup di ekosistem perairan (biomagnifikasi).'
+    },
+    drought_heat: {
+      body: 'Hujan membasahi tanah gersang sehingga produsen (rumput & pohon) tumbuh lagi dan menyelamatkan herbivora dari kelaparan.',
+      tip: '💡 Konsep IPA: Komponen abiotik (air & kelembaban) sangat menentukan kelangsungan komponen biotik.'
+    },
+    wildfire: {
+      body: 'Memadamkan titik api menghentikan kerusakan habitat dan memberi kesempatan tunas baru tumbuh sebagai sumber makanan satwa.',
+      tip: '💡 Konsep IPA: Suksesi sekunder dimulai ketika lahan terbakar kembali memiliki air dan tumbuhan perintis.'
+    },
+    natural_flood: {
+      body: 'Akar pohon alami menyerap kelebihan air sungai (infiltrasi) sehingga banjir mereda dan ladang serta satwa tepi sungai kembali aman.',
+      tip: '💡 Konsep IPA: Vegetasi berfungsi sebagai daerah resapan air alami yang menjaga kestabilan ekosistem.'
+    }
+  };
+
+  function showReflectionModal(key) {
+    if (!reflectModalEl || !reflectBodyEl || !reflectTipEl) return;
+    const info = CONSEQUENCE_REFLECTIONS[key] || {
+      body: 'Langkah pemulihanmu mengembalikan komponen kunci ekosistem sehingga aliran energi antar tingkat trofik dapat berjalan seimbang lagi!',
+      tip: '💡 Konsep IPA: Setiap komponen biotik dan abiotik saling bergantung menjaga keseimbangan ekosistem.'
+    };
+    reflectBodyEl.textContent = info.body;
+    reflectTipEl.textContent = info.tip;
+    reflectModalEl.classList.remove('hidden');
+  }
+
   // Everyday conversational 3-second Consequence Choice definitions ("Oh tidak! Karena ... hilang, maka ... Perbaiki vs Lihat Akibatnya")
-  function guidePlayerRecovery({ cat, cardIds, targetGx, targetGz, targetAnimal, targetTitle, targetDesc, instruction }) {
+  function guidePlayerRecovery({ cat, cardIds, targetGx, targetGz, targetAnimal, targetTitle, targetDesc, instruction, scenarioKey }) {
+    if (scenarioKey) activeRecoveryKey = scenarioKey;
     guidedCardIds = Array.isArray(cardIds) ? cardIds.slice() : [];
     guidedHintText = instruction || 'Pilih kartu yang menyala di deck bawah, lalu letakkan di lokasi sasaran!';
     selectedDockCard = null; // Never auto-pick or auto-execute for the player!
@@ -7326,6 +7441,7 @@
     const sc = CONSEQUENCE_SCENARIOS[kind];
     if (!sc || !conseqModalEl) return;
     pendingConsequence = kind;
+    activeRecoveryKey = kind;
     tutSawConseq = true;
     if (conseqBadgeEl) conseqBadgeEl.textContent = sc.badge;
     if (conseqTitleEl) conseqTitleEl.textContent = sc.title;
@@ -8192,6 +8308,24 @@
       advisorPctEl = document.getElementById('iso-advisor-pct');
       advisorTipEl = document.getElementById('iso-advisor-tip');
       coinValEl = document.getElementById('iso-coin-val');
+      debtBadgeEl = document.getElementById('iso-debt-badge');
+      loanBtnEl = document.getElementById('iso-loan-btn');
+      if (loanBtnEl) loanBtnEl.addEventListener('click', requestEmergencyCoinLoan);
+      pyrStatusEl = document.getElementById('iso-pyramid-status');
+      pyrRows = {
+        prod: { row: document.getElementById('iso-pyr-row-prod'), fill: document.getElementById('iso-pyr-fill-prod'), cnt: document.getElementById('iso-pyr-cnt-prod') },
+        herb: { row: document.getElementById('iso-pyr-row-herb'), fill: document.getElementById('iso-pyr-fill-herb'), cnt: document.getElementById('iso-pyr-cnt-herb') },
+        carn: { row: document.getElementById('iso-pyr-row-carn'), fill: document.getElementById('iso-pyr-fill-carn'), cnt: document.getElementById('iso-pyr-cnt-carn') },
+        apex: { row: document.getElementById('iso-pyr-row-apex'), fill: document.getElementById('iso-pyr-fill-apex'), cnt: document.getElementById('iso-pyr-cnt-apex') }
+      };
+      reflectModalEl = document.getElementById('iso-reflect-modal');
+      reflectBodyEl = document.getElementById('iso-reflect-body');
+      reflectTipEl = document.getElementById('iso-reflect-tip');
+      const reflectOk = document.getElementById('iso-reflect-ok');
+      const reflectX = document.getElementById('iso-reflect-x');
+      if (reflectOk) reflectOk.addEventListener('click', () => reflectModalEl && reflectModalEl.classList.add('hidden'));
+      if (reflectX) reflectX.addEventListener('click', () => reflectModalEl && reflectModalEl.classList.add('hidden'));
+      gestureHintEl = document.getElementById('iso-gesture-hint');
       yearLabelEl = document.getElementById('iso-year-label');
       civSummaryEl = document.getElementById('iso-civ-summary');
       peatBadgeEl = document.getElementById('iso-peat-badge');
@@ -8389,6 +8523,13 @@
       cam.targetY = 22;
       cam.zoom = 0.56;
       cam.targetZoom = 0.56;
+      if (gestureHintEl && (window.innerWidth <= 900 || 'ontouchstart' in window)) {
+        gestureHintEl.classList.remove('hidden');
+        if (gestureHintTimer) clearTimeout(gestureHintTimer);
+        gestureHintTimer = setTimeout(() => {
+          if (gestureHintEl) gestureHintEl.classList.add('hidden');
+        }, 3600);
+      }
     },
     close() {
       active = false;

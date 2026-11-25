@@ -34,6 +34,15 @@
           <h1 class="ecoborn-logo">ECOBORN</h1>
         </div>
 
+        <!-- Learning Path Hint -->
+        <div class="menu-learning-path" aria-label="Alur Belajar Disarankan">
+          <span>1. Mulai di 2D</span>
+          <span class="lp-arrow">→</span>
+          <span>2. Eksplorasi 3D</span>
+          <span class="lp-arrow">→</span>
+          <span>3. Balapan Kuis BioKart</span>
+        </div>
+
         <!-- 5 Wooden Buttons (2D Food Chain, 3D Isometric, BioKart Racers, Materi, Pengaturan) -->
         <nav class="menu-buttons">
           <button id="menu-play-btn" class="wood-btn primary-wood-btn">🌿 DUNIA 2D RANTAI MAKANAN</button>
@@ -448,11 +457,44 @@
             </div>
             <div class="iso-balance-label">
               <span>Keseimbangan: <strong id="iso-balance-pct">88%</strong> • 🪙 <strong
-                  id="iso-coin-val">1200</strong></span>
+                  id="iso-coin-val">1200</strong>
+                <span id="iso-debt-badge" class="iso-debt-badge hidden" title="Sisa cicilan pinjaman koin"></span>
+                <button id="iso-loan-btn" class="iso-loan-btn" title="Pinjam 80 Koin Darurat (otomatis terpotong/kecicil saat panen koin)">🆘 Pinjam</button>
+              </span>
               <span id="iso-pop-summary" class="iso-pop-pill">🌱0 • 🦗0 • 🐍0 • 🦅0</span>
             </div>
             <div class="iso-balance-track">
               <div id="iso-balance-fill" class="iso-balance-fill" style="width: 88%;"></div>
+            </div>
+
+            <!-- Piramida Trofik Live (4 Bar Bertingkat) -->
+            <div id="iso-pyramid-box" class="iso-pyramid-box" title="Piramida Trofik: Lapisan bawah (Produsen) harus lebih banyak dari lapisan atasnya">
+              <div class="iso-pyramid-head">
+                <span>🔺 Piramida Trofik Live</span>
+                <span id="iso-pyramid-status" class="iso-pyramid-status">⚖️ Seimbang</span>
+              </div>
+              <div class="iso-pyramid-rows">
+                <div class="iso-pyr-row" id="iso-pyr-row-apex">
+                  <span class="iso-pyr-lbl">🦅 Puncak</span>
+                  <div class="iso-pyr-track"><div id="iso-pyr-fill-apex" class="iso-pyr-fill apex" style="width:15%"></div></div>
+                  <span id="iso-pyr-cnt-apex" class="iso-pyr-cnt">0</span>
+                </div>
+                <div class="iso-pyr-row" id="iso-pyr-row-carn">
+                  <span class="iso-pyr-lbl">🐍 Kons. II</span>
+                  <div class="iso-pyr-track"><div id="iso-pyr-fill-carn" class="iso-pyr-fill carn" style="width:30%"></div></div>
+                  <span id="iso-pyr-cnt-carn" class="iso-pyr-cnt">0</span>
+                </div>
+                <div class="iso-pyr-row" id="iso-pyr-row-herb">
+                  <span class="iso-pyr-lbl">🦗 Kons. I</span>
+                  <div class="iso-pyr-track"><div id="iso-pyr-fill-herb" class="iso-pyr-fill herb" style="width:55%"></div></div>
+                  <span id="iso-pyr-cnt-herb" class="iso-pyr-cnt">0</span>
+                </div>
+                <div class="iso-pyr-row" id="iso-pyr-row-prod">
+                  <span class="iso-pyr-lbl">🌱 Produsen</span>
+                  <div class="iso-pyr-track"><div id="iso-pyr-fill-prod" class="iso-pyr-fill prod" style="width:90%"></div></div>
+                  <span id="iso-pyr-cnt-prod" class="iso-pyr-cnt">0</span>
+                </div>
+              </div>
             </div>
             <div class="iso-civ-bar">
               <span id="iso-year-label" class="iso-year-badge">📅 Thn 1 • Hujan</span>
@@ -657,6 +699,27 @@
             <button id="iso-conseq-watch" class="iso-conseq-watch-btn">👀 Biarkan &amp; Lihat Akibatnya</button>
           </div>
         </div>
+      </div>
+
+      <!-- Post-Recovery Reflection Pop-up ("Kenapa tindakanmu tadi berhasil?") -->
+      <div id="iso-reflect-modal" class="iso-edu-modal hidden">
+        <div class="iso-edu-card iso-reflect-card">
+          <div class="iso-edu-top">
+            <span class="iso-edu-badge iso-reflect-badge">💡 REFLEKSI SAINS IPA</span>
+            <button id="iso-reflect-x" class="iso-event-popup-close" title="Tutup">✕</button>
+          </div>
+          <h3 id="iso-reflect-title" class="iso-edu-title">✨ Kenapa Tindakanmu Tadi Berhasil?</h3>
+          <p id="iso-reflect-body" class="iso-edu-body"></p>
+          <div id="iso-reflect-tip" class="iso-edu-tip"></div>
+          <button id="iso-reflect-ok" class="iso-edu-ok-btn">👍 Paham! Lanjutkan Simulasi</button>
+        </div>
+      </div>
+
+      <!-- Touch Gesture Hint (Mobile / First 3.5 Seconds in 3D) -->
+      <div id="iso-gesture-hint" class="iso-gesture-hint hidden" aria-hidden="true">
+        <span>👆 Geser 1 jari untuk menggeser peta</span>
+        <span class="gh-sep">•</span>
+        <span>🤏 Cubit 2 jari untuk Zoom</span>
       </div>
 
       <!-- Floating Bottom-Left Guide / Status Toast -->
