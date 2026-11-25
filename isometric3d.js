@@ -101,6 +101,9 @@
   let displacedAnimalEvacCount = 0;
   let displacedCooldown = 0;
   let lastDisplacedReason = 'terra_erase';
+  let initialBiomeCounts = {};
+  let liveBiomeCounts = {};
+  let habitatCountTimer = 0;
   let pendingConsequence = null;
   let consequenceTimer = 0;
   let conseqModalEl = null;
@@ -1385,6 +1388,8 @@
       });
     }
 
+    initialBiomeCounts = recountLiveBiomes();
+
     // 5) Urutan gambar & pilihan tile per rotasi kamera (dihitung SEKALI)
     const nonOceanTiles = [];
     for (let gz = 0; gz < MAP_SIZE; gz++) {
@@ -1490,6 +1495,37 @@
     return rows;
   }
 
+
+  function recountLiveBiomes() {
+    const counts = {};
+    for (let gz = 0; gz < MAP_SIZE; gz++) {
+      const row = grid[gz];
+      if (!row) continue;
+      for (let gx = 0; gx < MAP_SIZE; gx++) {
+        const t = row[gx];
+        if (!t || t.isOceanMargin || t.type === 'water') continue;
+        // Destroyed/monocultured/burning tiles no longer count as healthy intact native habitat
+        if (t.hasSawit || t.fireTimer > 0 || t.floodTimer > 0) continue;
+        counts[t.biome] = (counts[t.biome] || 0) + 1;
+      }
+    }
+    liveBiomeCounts = counts;
+    return counts;
+  }
+
+  function getBiomeDamageRatio(biomeKey) {
+    const initCnt = initialBiomeCounts[biomeKey] || 0;
+    if (initCnt <= 0) return 0;
+    const liveCnt = liveBiomeCounts[biomeKey] !== undefined ? liveBiomeCounts[biomeKey] : initCnt;
+    return Math.max(0, Math.min(1, 1 - liveCnt / initCnt));
+  }
+
+  function canSpeciesMigrate(a) {
+    if (!a) return false;
+    if (a.isAdapted) return true;
+    const origin = a.originBiome || (SPECIES_NATIVE_BIOMES[a.type] && SPECIES_NATIVE_BIOMES[a.type][0]) || 'grassland';
+    return getBiomeDamageRatio(origin) >= 0.75;
+  }
 
   function findLandSpotInBiome(biomeKey) {
     for (let tries = 0; tries < 80; tries++) {
@@ -2629,6 +2665,11 @@
         }
       }
 
+      habitatCountTimer += dt;
+      if (habitatCountTimer >= 1.5) {
+        habitatCountTimer = 0;
+        recountLiveBiomes();
+      }
       ecoCheckTimer += dt;
       if (ecoCheckTimer >= 3.2) {
         ecoCheckTimer = 0;
@@ -2885,7 +2926,8 @@
         evacuateEntitiesFromTile(currentTile);
       }
       const nativeList = SPECIES_NATIVE_BIOMES[a.type] || ['grassland'];
-      const inForeignBiome = !a.isAdapted && a.adaptedBiome !== currentTile.biome && !nativeList.includes(currentTile.biome);
+      const allowMigrate = canSpeciesMigrate(a);
+      const inForeignBiome = allowMigrate && !a.isAdapted && a.adaptedBiome !== currentTile.biome && !nativeList.includes(currentTile.biome);
       if (inForeignBiome) {
         // Count local native competitors of the same trophic level nearby!
         let localRivals = 0;
@@ -3059,9 +3101,21 @@
       if (tx >= 2 && tx < MAP_SIZE - 2 && tz >= 2 && tz < MAP_SIZE - 2) {
         const nextTile = grid[tz][tx];
         const canEnterWater = a.isFly || a.type === 'water_bug' || a.type === 'frog';
-        if ((nextTile.isOceanMargin && !a.isFly) || (!canEnterWater && nextTile.type === 'water')) {
+        const isNativeTarget = nativeList.includes(nextTile.biome) || (a.isAdapted && a.adaptedBiome === nextTile.biome);
+        const blockedByHabitatWall = !allowMigrate && !isNativeTarget && nativeList.includes(currentTile.biome);
+        if ((nextTile.isOceanMargin && !a.isFly) || (!canEnterWater && nextTile.type === 'water') || blockedByHabitatWall) {
           a.vx = -a.vx;
           a.vz = -a.vz;
+          if (blockedByHabitatWall) {
+            const homeTile = findNearestTile(a.gx, a.gz, 8, (t) => !t.isOceanMargin && t.type !== 'water' && nativeList.includes(t.biome));
+            if (homeTile) {
+              const hx = homeTile.gx + 0.5 - a.gx;
+              const hz = homeTile.gz + 0.5 - a.gz;
+              const hd = Math.hypot(hx, hz) || 1;
+              a.vx = (hx / hd) * a.def.speed * 0.7;
+              a.vz = (hz / hd) * a.def.speed * 0.7;
+            }
+          }
         } else {
           a.gx = nextX;
           a.gz = nextZ;
@@ -7519,6 +7573,7 @@
     if (modifiedCount > 0) {
       // Seamless ~1.5ms localized pixel rebake (smooth turquoise river banks & organic biome edges, ZERO lag!)
       rebakeTerrainSubRect(centerTile.gx + 0.5, centerTile.gz + 0.5, 1.85);
+      recountLiveBiomes();
     }
 
     // Small/minor edits (< 18 tiles and < 3 animals directly displaced) happen silently without interrupting!
@@ -7528,7 +7583,8 @@
       terraKind === 'desert' ? 'desertify'
       : terraKind === 'grassland' ? 'reclaim'
       : 'terra_erase';
-    if ((displacedCounter >= 18 || displacedAnimalEvacCount >= 3) && displacedCooldown <= 0 && !pendingConsequence) {
+    const anyBiome75Lost = Object.keys(initialBiomeCounts).some((bk) => getBiomeDamageRatio(bk) >= 0.75);
+    if ((anyBiome75Lost || displacedAnimalEvacCount >= 3) && displacedCooldown <= 0 && !pendingConsequence) {
       maybeTriggerBiomeDisplaced(reason);
     }
     return modifiedCount;
@@ -8414,6 +8470,8 @@
       };
     },
     maybeTriggerBiomeDisplaced,
+    getBiomeDamageRatio,
+    canSpeciesMigrate,
     debugLayout,
     tick(dt) {
       if (!active) return;

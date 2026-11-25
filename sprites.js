@@ -254,6 +254,20 @@
       fps: 5.5,
       rowCounts: [4],
       states: { idle: [0], move: [0] }
+    },
+    orangutan: {
+      src: 'assets/sheets/orangutan_sheet.png?v=1',
+      frameSize: 128,
+      fps: 6.5,
+      rowCounts: [4],
+      states: { idle: [0], move: [0] }
+    },
+    hornbill: {
+      src: 'assets/sheets/enggang_sheet.png?v=1',
+      frameSize: 128,
+      fps: 7.5,
+      rowCounts: [4],
+      states: { idle: [0], move: [0] }
     }
   };
 
@@ -275,7 +289,9 @@
     snake: { sheet: 'snake', filter: '' },
     tropical_snake: { sheet: 'snake', filter: 'hue-rotate(75deg) saturate(1.3)' },
     water_snake: { sheet: 'snake', filter: 'hue-rotate(155deg) saturate(1.2)' },
-    desert_snake: { sheet: 'snake', filter: 'sepia(0.5) brightness(1.08)' }
+    desert_snake: { sheet: 'snake', filter: 'sepia(0.5) brightness(1.08)' },
+    orangutan: { sheet: 'orangutan', filter: '' },
+    hornbill: { sheet: 'hornbill', filter: '' }
   };
 
   const SIZE_MAP = { 2: 44, 3: 58, 4: 84, 5: 96 };
