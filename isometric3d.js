@@ -1989,7 +1989,7 @@
       const zoneCarns = zoneAnimals.filter((a) => CARNIVORES.includes(a.type));
       const zoneApex = zoneAnimals.filter((a) => APEXES.includes(a.type));
 
-      if (prodTiles.length >= 4 && zoneHerbs.length < Math.min(6, Math.ceil(prodTiles.length / 2.5))) {
+      if (prodTiles.length >= 5 && zoneHerbs.length >= 2 && zoneHerbs.length < Math.min(6, Math.ceil(prodTiles.length / 3))) {
         const spotTile = prodTiles[Math.floor(Math.random() * prodTiles.length)];
         const herbType = BIOME_PALETTES[bKey].defaultHerbivore || 'hopper';
         const newborn = spawnAnimalAt(herbType, spotTile.gx + 0.5, spotTile.gz + 0.5);
@@ -2011,7 +2011,7 @@
         break;
       }
 
-      if (hungryApex.length === 0 && zoneHerbs.length >= 3 && zoneCarns.length < 4) {
+      if (hungryApex.length === 0 && zoneHerbs.length >= 3 && zoneCarns.length >= 1 && zoneCarns.length < 4) {
         const carnType = bKey === 'desert' ? 'desert_snake' : bKey === 'tropical' ? 'tropical_snake' : Math.random() < 0.55 ? 'frog' : 'snake';
         const spot = findLandSpotInBiome(bKey);
         const child = spawnAnimalAt(carnType, spot.gx, spot.gz);
@@ -3001,7 +3001,12 @@
         a.fullTimer = Math.max(0, a.fullTimer - dt);
         a.hunger = Math.max(0, a.hunger - dt * 0.5);
       } else {
-        const drainScale = shelterTreeTile && a.isFly ? 0.65 : 1.0;
+        let drainScale = shelterTreeTile && a.isFly ? 0.65 : 1.0;
+        if (CARNIVORES.includes(a.type) && animals.filter((x) => CARNIVORES.includes(x.type)).length > animals.filter((x) => HERBIVORES.includes(x.type)).length) {
+          drainScale *= 1.45;
+        } else if (APEXES.includes(a.type) && animals.filter((x) => APEXES.includes(x.type)).length > animals.filter((x) => CARNIVORES.includes(x.type)).length) {
+          drainScale *= 1.45;
+        }
         a.hunger = Math.min(100, a.hunger + dt * 2.1 * drainScale);
       }
       a.thirst = Math.min(100, a.thirst + dt * 1.6);
