@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Ecoborn V2 — Ekosistem Padang Rumput</title>
+  <link rel="stylesheet" href="styles.css?v=42" />
+</head>
+
+<body>
+  <div id="game-shell" class="menu-active">
+    <!-- Main Menu Overlay (Responsive Portrait & Landscape + Live Animated Padang Rumput Scene) -->
+    <section id="main-menu" class="main-menu">
+      <canvas id="menu-sky-canvas" class="menu-sky-canvas"></canvas>
+
+      <div class="menu-content">
+        <span class="frame-vine fv-tl">🌿🍃</span>
+        <span class="frame-vine fv-tr">🍃🌿</span>
+        <span class="frame-vine fv-bl">🌿</span>
+        <span class="frame-vine fv-br">🌿</span>
+
+        <!-- Wooden ECOBORN Title Plaque -->
+        <div class="ecoborn-plaque">
+          <span class="plaque-vine tl">🌸🌿</span>
+          <span class="plaque-vine tr">🌿🌼</span>
+          <span class="plaque-vine bl">🌿</span>
+          <span class="plaque-vine br">🌺🌿</span>
+          <div class="plaque-sprouts">
+            <span>🌱</span>
+            <span>🌱</span>
+          </div>
+          <h1 class="ecoborn-logo">ECOBORN</h1>
+        </div>
+
+        <!-- 4 Wooden Buttons (Includes 3D Isometric Food Web & Disaster Lab!) -->
+        <nav class="menu-buttons">
+          <button id="menu-play-btn" class="wood-btn primary-wood-btn">MULAI BERMAIN</button>
+          <button id="menu-iso-btn" class="wood-btn">🌍 DUNIA 3D ISOMETRIK</button>
+          <button id="menu-materi-btn" class="wood-btn">MATERI</button>
+          <button id="menu-settings-btn" class="wood-btn">PENGATURAN</button>
+        </nav>
+      </div>
+
+      <!-- Bottom Corner Wooden Circle Buttons -->
+      <div class="menu-bottom-bar">
+        <div class="menu-corner-item">
+          <button id="menu-sound-btn" class="wood-circle-btn" title="Suara On/Off">🔊</button>
+          <span class="menu-corner-label">SUARA</span>
+        </div>
+        <div class="menu-corner-item">
+          <button id="menu-about-btn" class="wood-circle-btn"
+            title="Informasi Media Pembelajaran SMP Kelas 7">ℹ️</button>
+          <span class="menu-corner-label">INFO MEDIA</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top HUD Bar -->
+    <header id="top-bar">
+      <div style="display:flex;align-items:center;gap:5px;">
+        <button id="home-menu-btn" class="hud-pill clickable" title="Kembali ke Menu Utama">🏠</button>
+        <button id="hud-iso-btn" class="hud-pill clickable" title="Buka Dunia 3D Isometrik & Simulasi Bencana">🌍
+          3D</button>
+        <button id="biome-select-btn" class="biome-title clickable" title="Pilih Bioma Ekosistem">
+          <span id="biome-icon" class="biome-icon">🌾</span>
+          <span id="biome-title-text">EKOSISTEM PADANG RUMPUT</span>
+          <span class="biome-caret">▾</span>
+        </button>
+      </div>
+      <div class="hud-pills">
+        <button id="hud-tutorial-btn" class="hud-pill clickable" title="Panduan Interaktif (Tutorial)">🎓</button>
+        <button id="lang-btn" class="hud-pill clickable" title="Ganti Bahasa (ID/EN)">ID</button>
+        <div id="coin-pill" class="hud-pill" title="Koin Ekosistem">
+          <span class="coin-dot">🪙</span>
+          <span id="coin-count">50</span>
+        </div>
+        <button id="health-pill" class="hud-pill clickable" title="Lihat Kesehatan Ekosistem">
+          <span>❤️</span>
+          <span id="health-percent">20%</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Playable World -->
+    <main id="world-container">
+      <canvas id="world-canvas"></canvas>
+
+      <!-- Top-Left Toasts -->
+      <div id="toast-container" aria-live="polite"></div>
+
+      <!-- Top-Right Mission Card -->
+      <aside id="mission-widget" class="mission-card">
+        <div class="mission-header">
+          <div class="mission-title-wrap">
+            <span>📋</span>
+            <span>MISI</span>
+          </div>
+          <button id="mission-toggle-btn" class="mission-min-btn" title="Perkecil/Perbesar Misi">−</button>
+        </div>
+        <div id="mission-body" class="mission-body">
+          <div class="mission-name-row">
+            <span id="mission-status-icon">⭕</span>
+            <span id="mission-name">🌱 Tumbuhkan Rumput</span>
+          </div>
+          <p id="mission-desc" class="mission-desc">Miliki 3 ubin Rumput</p>
+          <div class="mission-meta-row">
+            <span id="mission-diff" class="badge-diff">Mudah</span>
+            <span id="mission-reward" class="badge-reward">+15 🪙</span>
+          </div>
+          <div class="mission-progress-wrap">
+            <div id="mission-progress-bar" class="mission-progress-bar"></div>
+          </div>
+          <button id="mission-action-btn" class="btn-green mission-btn">AMBIL MISI</button>
+        </div>
+      </aside>
+
+      <!-- Floating Bottom Controls -->
+      <div class="world-controls">
+        <div class="left-controls">
+          <button id="speed-btn" class="circle-btn blue-btn" title="Ubah Kecepatan Simulasi">
+            <span class="speed-bolt">⚡</span>
+            <span id="speed-label">1x</span>
+          </button>
+          <button id="reset-btn" class="circle-btn small-btn" title="Ulangi Dunia">🔄</button>
+        </div>
+        <div class="right-controls">
+          <button id="sound-btn" class="circle-btn small-btn" title="Suara On/Off">🔊</button>
+          <button id="play-pause-btn" class="circle-btn green-btn" title="Jeda / Lanjutkan">⏸</button>
+        </div>
+      </div>
+
+      <!-- Drag Ghost -->
+      <div id="drag-ghost" class="drag-ghost hidden">
+        <canvas id="drag-ghost-canvas" width="48" height="48"></canvas>
+        <span id="drag-ghost-label"></span>
+      </div>
+    </main>
+
+    <!-- Bottom Card Deck Bar -->
+    <footer id="deck-bar">
+      <button id="deck-prev" class="deck-arrow" aria-label="Geser Kiri">◀</button>
+      <div id="card-track" class="card-track"></div>
+      <button id="deck-next" class="deck-arrow" aria-label="Geser Kanan">▶</button>
+    </footer>
+  </div>
+
+  <!-- Modal: Educational Info (Screenshot 1) -->
+  <div id="info-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-sprite-wrap">
+        <canvas id="info-sprite-canvas" width="96" height="96"></canvas>
+      </div>
+      <h2 id="info-title" class="modal-title">🌱 RUMPUT</h2>
+      <div class="info-badges">
+        <span id="info-badge-role" class="pill-tan">Produsen</span>
+        <span id="info-badge-level" class="pill-green">📊 Produsen (Dasar Rantai Makanan)</span>
+      </div>
+      <p class="info-desc">
+        <strong>Penjelasan:</strong> <span id="info-desc-text"></span>
+      </p>
+      <div class="callout-green">
+        <strong>🌍 Peran Ekosistem:</strong> <span id="info-role-text"></span>
+      </div>
+      <button id="info-close-btn" class="btn-green modal-btn">LANJUTKAN</button>
+    </div>
+  </div>
+
+  <!-- Modal: Ecosystem Health (Screenshot 3) -->
+  <div id="health-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h2 class="modal-title">🩷 KESEHATAN EKOSISTEM</h2>
+      <p class="modal-subtitle">Kesehatan ekosistem menunjukkan keseimbangan dunia Anda.</p>
+      <p class="health-current">Kesehatan Saat Ini: <strong id="modal-health-pct">0%</strong></p>
+
+      <div class="ratio-box">
+        <div class="ratio-box-title">📊 RASIO IDEAL UNTUK 100% KESEHATAN (PADANG RUMPUT):</div>
+        <div id="ratio-list" class="ratio-list"></div>
+      </div>
+
+      <p class="ratio-formula"><strong>Rasio Rantai Makanan:</strong> 16 : 8 : 4 : 2 : 1</p>
+      <p class="modal-note">Jaga populasi sesuai rasio ideal untuk mencapai keseimbangan sempurna!</p>
+      <button id="health-close-btn" class="btn-green modal-btn">TUTUP</button>
+    </div>
+  </div>
+
+  <!-- Modal: Victory / Complete Food Chain (Screenshot 4) -->
+  <div id="victory-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="victory-emoji">🎉</div>
+      <h2 class="modal-title">SELAMAT!</h2>
+      <p class="modal-subtitle">
+        Anda telah menyelesaikan <strong>rantai makan ekosistem Padang Rumput</strong>! Semua hewan dapat hidup bebas
+        dalam siklus alam yang harmonis.
+      </p>
+
+      <div class="cycle-box">
+        <div class="cycle-title">🌍 SIKLUS NUTRISI LENGKAP</div>
+        <div class="cycle-diagram">
+          <div>🌱 → 🦗 → 🐸 → 🐍 → 🦅</div>
+          <div class="cycle-down">↓</div>
+          <div>🍄</div>
+        </div>
+        <div class="cycle-legend">
+          <div><strong>Produsen:</strong> 🌱 Rumput</div>
+          <div><strong>Konsumen Primer:</strong> 🦗 Belalang</div>
+          <div><strong>Konsumen Sekunder:</strong> 🐸 Katak</div>
+          <div><strong>Konsumen Tersier:</strong> 🐍 Ular</div>
+          <div><strong>Predator Puncak:</strong> 🦅 Elang</div>
+          <div><strong>Pengurai:</strong> 🍄 Jamur</div>
+        </div>
+      </div>
+
+      <div class="callout-green">
+        Ekosistem Anda sekarang memiliki semua tingkat trofik yang seimbang! Terus jaga keseimbangan antara produsen,
+        konsumen, dan pengurai untuk menjaga dunia tetap hidup.
+      </div>
+
+      <div class="victory-actions">
+        <button id="victory-continue-btn" class="btn-green modal-btn">▶ LANJUTKAN BERMAIN</button>
+        <button id="victory-biome-btn" class="btn-orange modal-btn">📖 LANJUT KE BIOMA SELANJUTNYA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Biome Selector -->
+  <div id="biome-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h2 id="biome-modal-title" class="modal-title">🌍 PILIH MODE & BIOMA</h2>
+      <p id="biome-modal-sub" class="modal-subtitle">Setiap bioma memiliki cuaca, harga kartu, dan rantai makanan unik!
+      </p>
+      <div id="biome-list" class="ratio-list" style="margin-bottom: 14px;"></div>
+      <button id="biome-close-btn" class="btn-green modal-btn">TUTUP</button>
+    </div>
+  </div>
+
+  <!-- Modal: Materi Pembelajaran SMP (2-Page Interactive Open Book) -->
+  <div id="materi-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="book-modal-wrap">
+      <button id="materi-close-btn" class="book-close-btn" title="Tutup Buku">✕</button>
+
+      <div class="open-book">
+        <!-- Left Page: Interactive Illustration & Controls -->
+        <div class="book-page book-page-left">
+          <div class="page-header-tag" id="book-left-tag">ILUSTRASI INTERAKTIF</div>
+          <div class="book-canvas-wrap">
+            <canvas id="book-illust-canvas" width="280" height="190"></canvas>
+          </div>
+          <p id="book-illust-caption" class="book-illust-caption">Klik elemen di bawah untuk berinteraksi dengan
+            ilustrasi:</p>
+          <div id="book-interactive-controls" class="book-interactive-controls"></div>
+        </div>
+
+        <!-- Book Spine -->
+        <div class="book-spine"></div>
+
+        <!-- Right Page: Structured Lesson Content & Navigation -->
+        <div class="book-page book-page-right">
+          <div class="page-header-tag" id="book-chapter-num">BAB 1 DARI 4</div>
+          <h2 id="book-title" class="book-title">Rantai Makanan & Tingkat Trofik</h2>
+          <div id="book-body-text" class="book-body-text"></div>
+          <div id="book-inspect-box" class="book-inspect-box"></div>
+
+          <div class="book-nav-footer">
+            <button id="book-prev-btn" class="book-nav-btn">◀ Sebelumnya</button>
+            <span id="book-page-indicator" class="book-page-indicator">Hal. 1 / 4</span>
+            <button id="book-next-btn" class="book-nav-btn">Selanjutnya ▶</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Informasi Media Pembelajaran (SMP Kelas 7 • Fase D) -->
+  <div id="media-info-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card mi-card">
+      <div class="mi-ribbon-row">
+        <span class="mi-ribbon">📘 INFORMASI MEDIA • IPA SMP KELAS VII</span>
+        <button id="media-info-x" class="fj-close-x" title="Tutup">✕</button>
+      </div>
+
+      <div class="mi-header">
+        <div class="mi-emblem">🌍</div>
+        <div class="mi-header-text">
+          <h2 class="mi-title">ECOBORN V2 — Ekosistem Nusantara</h2>
+          <div class="mi-badges">
+            <span class="mi-pill target">🎓 Sasaran: Siswa SMP Kelas VII (Fase D)</span>
+            <span class="mi-pill mode">📱 HP &amp; Desktop</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="mi-tabs" class="mi-tabs" role="tablist">
+        <button class="mi-tab active" data-mi-tab="about">📖 Tentang Game</button>
+        <button class="mi-tab" data-mi-tab="cp">🎯 Tujuan &amp; CP</button>
+        <button class="mi-tab" data-mi-tab="p5">🇮🇩 Profil Pancasila</button>
+        <button class="mi-tab" data-mi-tab="guide">🕹️ Cara Main</button>
+      </div>
+
+      <div class="mi-panels">
+        <!-- Tab 1: Tentang Game -->
+        <div class="mi-panel active" data-mi-panel="about">
+          <p class="mi-lead">
+            <strong>Ecoborn V2</strong> adalah media pembelajaran berbasis game simulasi ekosistem (2D &amp; 3D
+            Isometrik)
+            yang melatih siswa memahami keseimbangan alam, interaksi makhluk hidup, dan konservasi lingkungan Indonesia.
+          </p>
+          <div class="mi-feature-grid">
+            <div class="mi-feature-box">
+              <div class="mi-f-icon">🌱</div>
+              <div class="mi-f-title">Mode 2D (4 Bioma)</div>
+              <div class="mi-f-desc">Atur cuaca, tumbuhkan produsen, dan lengkapi rantai makanan + Buku Materi.</div>
+            </div>
+            <div class="mi-feature-box">
+              <div class="mi-f-icon">🏝️</div>
+              <div class="mi-f-title">Pulau 3D (6 Bioma)</div>
+              <div class="mi-f-desc">Amati 4 simbiosis, peradaban desa, bencana alam &amp; adaptasi satwa.</div>
+            </div>
+            <div class="mi-feature-box">
+              <div class="mi-f-icon">🪵</div>
+              <div class="mi-f-title">Gambut Kalimantan</div>
+              <div class="mi-f-desc">Pelajari dampak kabut asap &amp; konservasi Sekat Kanal bagi Orangutan.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Tujuan & Capaian Pembelajaran -->
+        <div class="mi-panel" data-mi-panel="cp">
+          <div class="mi-cp-banner">
+            <div class="mi-cp-tag">CAPAIAN PEMBELAJARAN • KURIKULUM MERDEKA (FASE D / SMP KELAS VII)</div>
+            <p class="mi-cp-text">
+              Peserta didik mampu <strong>menganalisis interaksi antar makhluk hidup dan lingkungannya</strong>
+              (aliran energi, rantai &amp; jaring makanan, simbiosis, serta adaptasi) dan merancang solusi nyata
+              terhadap pencemaran, kerusakan habitat, serta konservasi ekosistem lokal.
+            </p>
+          </div>
+          <div class="mi-goal-list">
+            <div class="mi-goal-item"><span>1️⃣</span><span>Membedakan peran <strong>Produsen, Herbivora, Karnivora,
+                  Predator Puncak</strong> &amp; Pengurai.</span></div>
+            <div class="mi-goal-item"><span>2️⃣</span><span>Mengidentifikasi <strong>4 Simbiosis</strong> (Mutualisme,
+                Komensalisme, Parasitisme, Amensalisme).</span></div>
+            <div class="mi-goal-item"><span>3️⃣</span><span>Menganalisis dampak <strong>pestisida, limbah, deforestasi
+                  &amp; pengeringan gambut</strong>.</span></div>
+            <div class="mi-goal-item"><span>4️⃣</span><span>Menerapkan aksi konservasi mandiri (reboisasi, <strong>Sekat
+                  Kanal</strong> &amp; paludikultur).</span></div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Profil Pelajar Pancasila -->
+        <div class="mi-panel" data-mi-panel="p5">
+          <div class="mi-p5-grid">
+            <div class="mi-p5-card">
+              <div class="mi-p5-head">🙏 Berakhlak kepada Alam</div>
+              <p>Menumbuhkan kepedulian menjaga hutan, sungai jernih, gambut &amp; satwa endemik Indonesia.</p>
+            </div>
+            <div class="mi-p5-card">
+              <div class="mi-p5-head">🧠 Bernalar Kritis</div>
+              <p>Menganalisis diagram sebab-akibat di Jurnal Lapangan dan memilih solusi ekologis yang tepat.</p>
+            </div>
+            <div class="mi-p5-card">
+              <div class="mi-p5-head">🚀 Mandiri</div>
+              <p>Mengelola keseimbangan pulau dan memperbaiki bencana secara langsung tanpa bantuan otomatis.</p>
+            </div>
+            <div class="mi-p5-card">
+              <div class="mi-p5-head">🎨 Kreatif</div>
+              <p>Merancang bentang alam, bioma, serta desa manusia yang selaras dengan kelestarian hutan.</p>
+            </div>
+            <div class="mi-p5-card">
+              <div class="mi-p5-head">🤝 Bergotong Royong</div>
+              <p>Melihat kerja sama antarwarga desa serta prinsip saling menguntungkan pada simbiosis alam.</p>
+            </div>
+            <div class="mi-p5-card">
+              <div class="mi-p5-head">🌏 Berkebinekaan Global</div>
+              <p>Mengenal kekayaan Nusantara lewat kearifan Gambut Kalimantan, Orangutan &amp; Burung Enggang.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Cara Main -->
+        <div class="mi-panel" data-mi-panel="guide">
+          <div class="mi-goal-list">
+            <div class="mi-goal-item"><span>🌱</span><span><strong>Mode 2D:</strong> Seret kartu Awan &amp; Rumput ke
+                lahan, lalu buka predator baru lewat Misi.</span></div>
+            <div class="mi-goal-item"><span>🌍</span><span><strong>Mode 3D:</strong> Ketuk kartu di deck bawah lalu
+                ketuk daratan pulau. Di HP, <strong>cubit 2 jari</strong> untuk zoom!</span></div>
+            <div class="mi-goal-item"><span>🔍</span><span><strong>Inspeksi ( i ):</strong> Saat muncul pop-up kejadian,
+                klik <em>Ayo Lihat</em> lalu ikon <strong>( i )</strong> untuk Jurnal Lapangan.</span></div>
+            <div class="mi-goal-item"><span>🎓</span><span><strong>Tutorial Berkembang:</strong> Panduan otomatis
+                menyesuaikan progresmu dan bisa dibuka ulang lewat tombol <strong>🎓</strong>.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <button id="media-info-close" class="fj-btn-restore mi-close-btn">🌿 Mengerti &amp; Mulai Menjelajah</button>
+    </div>
+  </div>
+
+  <!-- Modal: Pengaturan -->
+  <div id="settings-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h2 class="modal-title">⚙️ PENGATURAN</h2>
+      <div class="ratio-list" style="margin: 12px 0 16px;">
+        <div class="ratio-row">
+          <span>🔊 Suara & Musik</span>
+          <button id="set-sound-toggle" class="btn-green" style="padding:5px 12px;font-size:11px;">AKTIF</button>
+        </div>
+        <div class="ratio-row">
+          <span>🌐 Bahasa / Language</span>
+          <button id="set-lang-toggle" class="btn-green" style="padding:5px 12px;font-size:11px;">INDONESIA</button>
+        </div>
+        <div class="ratio-row">
+          <span>🔄 Reset Progres Bioma Ini</span>
+          <button id="set-reset-btn" class="btn-orange" style="padding:5px 12px;font-size:11px;">RESET</button>
+        </div>
+      </div>
+      <button id="settings-close-btn" class="btn-green modal-btn">SIMPAN & TUTUP</button>
+    </div>
+  </div>
+
+  <!-- Modal: 3D Isometric Food Web & Ecosystem Simulator (Matching Reference Design) -->
+  <div id="iso-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" style="padding:0;">
+    <div class="iso-lab-shell">
+      <canvas id="iso-canvas"></canvas>
+
+      <!-- Top-Left: Nusantara Kingdom/Biome Header + Stacked Mission Cards -->
+      <div class="iso-top-bar">
+        <div class="iso-tl-stack">
+          <div class="iso-hud-tl">
+            <div class="iso-tl-header">
+              <span id="iso-biome-title">DIORAMA 6 BIOMA (3D)</span>
+              <div class="iso-tl-controls">
+                <select id="iso-mode-select" class="iso-mode-select"
+                  title="Pilih Mode Bioma 3D (Hewan & Kartu Menyesuaikan)">
+                  <option value="multi">6 Bioma</option>
+                  <option value="grassland">Sawah &amp; Rumput</option>
+                  <option value="hills">Perbukitan</option>
+                  <option value="tropical">Hutan Tropis</option>
+                  <option value="swamp">Rawa Bakau</option>
+                  <option value="desert">Gurun Oasis</option>
+                  <option value="peatland">🪵 Gambut Kalimantan</option>
+                </select>
+                <button id="iso-biome-cycle-btn" class="iso-mini-biome-btn" title="Ganti Mode Berikutnya">↻</button>
+                <button id="iso-tl-zone-toggle" class="iso-mini-biome-btn iso-mobile-only"
+                  title="Tampilkan/Sembunyikan Zona Bioma">🗺️▾</button>
+              </div>
+            </div>
+            <div class="iso-balance-label">
+              <span>Keseimbangan: <strong id="iso-balance-pct">88%</strong> • 🪙 <strong
+                  id="iso-coin-val">1200</strong></span>
+              <span id="iso-pop-summary" class="iso-pop-pill">🌱0 • 🦗0 • 🐍0 • 🦅0</span>
+            </div>
+            <div class="iso-balance-track">
+              <div id="iso-balance-fill" class="iso-balance-fill" style="width: 88%;"></div>
+            </div>
+            <div class="iso-civ-bar">
+              <span id="iso-year-label" class="iso-year-badge">📅 Thn 1 • Hujan</span>
+              <span id="iso-civ-summary" class="iso-civ-stats">👥1 🏠0 🌾0 🪵0 🪨0 🌴0</span>
+              <span id="iso-peat-badge" class="iso-peat-badge" title="Kelembaban Lahan Gambut Kalimantan">🪵 Gambut
+                88%</span>
+            </div>
+          </div>
+
+          <!-- Collapsible Mission & Legend Cards (Stacked under Top-Left like Rival Cards) -->
+          <div id="iso-hud-tr" class="iso-hud-tr">
+            <div class="iso-tr-header">
+              <span id="iso-mission-header-title" class="iso-tr-title-text">📜 Misi Ekosistem &amp; Negeri (0/6)</span>
+              <button id="iso-tr-toggle-btn" class="iso-mini-biome-btn" title="Lipat / Buka Panel Misi">▾</button>
+            </div>
+            <div id="iso-tr-body" class="iso-tr-body">
+              <div class="iso-missions-scroll">
+                <div id="iso-mission-1" class="iso-mission-item accent-red">
+                  <span id="iso-m1-dot" class="iso-mission-dot">○</span>
+                  <span id="iso-m1-text">Hubungkan rantai makanan (Produsen → Predator)</span>
+                </div>
+                <div id="iso-mission-2" class="iso-mission-item accent-teal">
+                  <span id="iso-m2-dot" class="iso-mission-dot">○</span>
+                  <span id="iso-m2-text">Pertahankan Predator Puncak (≥ 3 Elang/Bangau)</span>
+                </div>
+                <div id="iso-mission-3" class="iso-mission-item accent-gold">
+                  <span id="iso-m3-dot" class="iso-mission-dot">○</span>
+                  <span id="iso-m3-text">Capai ≥ 6 interaksi Simbiosis Mutualisme &amp; Komensalisme</span>
+                </div>
+                <div id="iso-mission-4" class="iso-mission-item accent-pink">
+                  <span id="iso-m4-dot" class="iso-mission-dot">○</span>
+                  <span id="iso-m4-text">Pasangkan Laki-laki &amp; Perempuan + bangun ≥ 2 Rumah</span>
+                </div>
+                <div id="iso-mission-5" class="iso-mission-item accent-green">
+                  <span id="iso-m5-dot" class="iso-mission-dot">○</span>
+                  <span id="iso-m5-text">Jaga Hutan Lestari (≥ 45 Pohon Alami &amp; Sawit ≤ 5)</span>
+                </div>
+                <div id="iso-mission-6" class="iso-mission-item accent-purple">
+                  <span id="iso-m6-dot" class="iso-mission-dot">○</span>
+                  <span id="iso-m6-text">Capai Keseimbangan Ekosistem ≥ 85% di Pulau</span>
+                </div>
+              </div>
+              <div class="iso-tr-sub">🔍 ZOOM KEJADIAN SIMBIOSIS</div>
+              <div id="iso-sym-summary" class="iso-sym-zoom-grid">
+                <button class="iso-sym-zoom-btn sym-mutual" data-sym-zoom="mutual"
+                  title="Zoom ke kejadian Simbiosis Mutualisme (+/+)">
+                  <span>🤝 Mutualisme</span><strong id="iso-sym-cnt-mutual">0</strong>
+                </button>
+                <button class="iso-sym-zoom-btn sym-commensal" data-sym-zoom="commensal"
+                  title="Zoom ke kejadian Simbiosis Komensalisme (+/0)">
+                  <span>🛡️ Komensalisme</span><strong id="iso-sym-cnt-commensal">0</strong>
+                </button>
+                <button class="iso-sym-zoom-btn sym-parasite" data-sym-zoom="parasite"
+                  title="Zoom ke kejadian Simbiosis Parasitisme (+/-)">
+                  <span>🦠 Parasitisme</span><strong id="iso-sym-cnt-parasite">0</strong>
+                </button>
+                <button class="iso-sym-zoom-btn sym-amensal" data-sym-zoom="amensal"
+                  title="Zoom ke kejadian Simbiosis Amensalisme (-/0)">
+                  <span>🌑 Amensalisme</span><strong id="iso-sym-cnt-amensal">0</strong>
+                </button>
+              </div>
+              <button id="iso-sym-reset-zoom" class="iso-sym-reset-btn hidden"
+                title="Kembalikan kamera ke tampilan pulau penuh">↩ Keluar Zoom Kejadian</button>
+              <div class="iso-tr-sub">ALIRAN ENERGI</div>
+              <div class="iso-legend-list">
+                <div><span style="color:#66bb6a;font-weight:800;">━━▶</span> Produsen → Herbivora</div>
+                <div><span style="color:#ef5350;font-weight:800;">━━▶</span> Mangsa → Predator</div>
+                <div><span style="color:#ffd54f;font-weight:800;">┅┅▶</span> Kompetisi &amp; Teritori</div>
+                <div><span style="color:#4fc3f7;font-weight:800;">━━▶</span> Simbiosis</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top-Right Action Toolbar (Nusantara Dark-Wood & Gold Icon Buttons) -->
+        <div class="iso-top-actions">
+          <button id="iso-tutorial-btn" class="iso-square-btn" title="Panduan Interaktif 3D & Gambut">
+            <span class="iso-sq-icon">🎓</span>
+            <span class="iso-sq-text">Panduan</span>
+          </button>
+          <button id="iso-web-btn" class="iso-square-btn"
+            title="Toggle Mode Jaring-Jaring Makanan (Garis Aliran Energi 3D)">
+            <span class="iso-sq-icon">🕸️</span>
+            <span class="iso-sq-text">Jaring</span>
+          </button>
+          <button id="iso-disaster-toggle-btn" class="iso-square-btn" title="Uji Skenario Bencana Ekologi">
+            <span class="iso-sq-icon">⚡</span>
+            <span class="iso-sq-text">Bencana</span>
+          </button>
+          <button id="iso-zoom-in-btn" class="iso-square-btn icon-only" title="Zoom In">🔍+</button>
+          <button id="iso-zoom-out-btn" class="iso-square-btn icon-only" title="Zoom Out">🔍−</button>
+          <button id="iso-rot-map-btn" class="iso-square-btn icon-only" title="Putar Peta 90°">↻</button>
+          <button id="iso-sim-toggle-btn" class="iso-square-btn green-sq" title="Mulai / Jeda Pergerakan Simulasi">
+            <span id="iso-sim-icon" class="iso-sq-icon">▶</span>
+            <span id="iso-sim-text" class="iso-sq-text">Mulai</span>
+          </button>
+          <button id="iso-pause-btn" class="iso-square-btn orange-sq icon-only" title="Pause / Lanjutkan">
+            <span id="iso-pause-icon" class="iso-sq-icon">⏸</span>
+          </button>
+          <button id="iso-sound-btn" class="iso-square-btn icon-only" title="Suara On/Off">
+            <span id="iso-sound-icon" class="iso-sq-icon">🔊</span>
+          </button>
+          <button id="iso-close-btn" class="iso-square-btn icon-only" title="Keluar dari Mode 3D">✕</button>
+        </div>
+      </div>
+
+      <!-- Disaster & Symbiosis Event Popover Menu (Everyday Conversational Indonesian) -->
+      <div id="iso-disaster-popover" class="iso-disaster-popover hidden">
+        <div class="disaster-pop-title">🌋 UJI BENCANA &amp; MASALAH ALAM</div>
+        <div class="disaster-pop-grid">
+          <button class="disaster-btn" data-disaster="pesticide">🧪 Semprot Racun Hama (Pestisida)</button>
+          <button class="disaster-btn" data-disaster="illegal_logging">🪓 Tebang Habis Pohon (Hutan Gundul)</button>
+          <button class="disaster-btn" data-disaster="river_waste">🛢️ Buang Limbah Kotor ke Sungai</button>
+          <button class="disaster-btn" data-disaster="drought_heat">☀️ Kemarau Panjang (Rumput Kering)</button>
+          <button class="disaster-btn" data-disaster="natural_flood">🌊 Sungai Meluap (Banjir Kampung)</button>
+          <button class="disaster-btn" data-disaster="wildfire">🔥 Hutan &amp; Kebun Terbakar</button>
+          <button class="disaster-btn" data-disaster="earthquake">🌋 Gempa Bumi &amp; Bukit Longsor</button>
+          <button class="disaster-btn" data-disaster="thunderstorm">⛈️ Hujan Badai &amp; Sambaran Petir</button>
+          <button class="disaster-btn" data-disaster="outbreak_parasite">🦠 Wabah Hama &amp; Benalu Pohon</button>
+          <button class="disaster-btn" data-disaster="peat_fire">🌫️ Gambut Kering &amp; Kabut Asap
+            (Kalimantan)</button>
+          <button class="disaster-btn restore" data-disaster="peat_rewet">🪵 Sekat Kanal &amp; Pembasahan
+            Gambut</button>
+          <button class="disaster-btn restore" data-disaster="bloom_mutualism">🤝 Suburkan Tanah (Jamur Baik)</button>
+          <button class="disaster-btn restore" data-disaster="restore_all">🌿 Pulihkan Seluruh Pulau</button>
+        </div>
+      </div>
+
+      <!-- Live Event Alert Pop-Up ("Sedang terjadi ... — Ayo Lihat!") -->
+      <div id="iso-event-popup" class="iso-event-popup hidden">
+        <span id="iso-event-popup-icon" class="iso-event-popup-icon">🤝</span>
+        <div class="iso-event-popup-content">
+          <div class="iso-event-popup-tag">KEJADIAN BERLANGSUNG</div>
+          <div id="iso-event-popup-text" class="iso-event-popup-text">Sedang terjadi Simbiosis Mutualisme!</div>
+        </div>
+        <button id="iso-event-popup-go" class="iso-event-popup-go">🔍 Ayo Lihat</button>
+        <button id="iso-event-popup-close" class="iso-event-popup-close" title="Tutup Notifikasi">✕</button>
+      </div>
+
+      <!-- Floating World-Anchored ( i ) Button on Zoomed Event -->
+      <button id="iso-zoom-i-btn" class="iso-zoom-i-btn hidden" title="Klik untuk membaca penjelasan kejadian ini">
+        <span class="iso-zoom-i-circle">i</span>
+        <span class="iso-zoom-i-label">Info Kejadian</span>
+      </button>
+
+      <!-- Field Journal Card Modal (Event / Symbiosis / Disaster / Displacement) -->
+      <div id="iso-edu-modal" class="iso-edu-modal hidden">
+        <div class="iso-edu-card fj-journal-card">
+          <span class="fj-corner-leaf tl" aria-hidden="true">🌿</span>
+          <span class="fj-corner-leaf tr" aria-hidden="true">🍃</span>
+          <span class="fj-corner-leaf bl" aria-hidden="true">🍃</span>
+          <span class="fj-corner-leaf br" aria-hidden="true">🌿</span>
+
+          <div class="fj-ribbon-bar">
+            <span id="iso-edu-badge" class="iso-edu-badge fj-ribbon">PERUBAHAN HABITAT &amp; SELEKSI ALAM</span>
+            <button id="iso-edu-x" class="fj-close-x" title="Tutup">✕</button>
+          </div>
+
+          <div class="fj-hero-row">
+            <div class="fj-portrait-wrap">
+              <div class="fj-portrait-frame">
+                <canvas id="iso-edu-portrait" width="56" height="56"></canvas>
+                <span id="iso-edu-portrait-icon" class="fj-portrait-fallback">🦅</span>
+              </div>
+              <span id="iso-edu-species" class="fj-species-tag">ELANG EMAS</span>
+            </div>
+            <div class="fj-hero-meta">
+              <div id="iso-edu-status" class="fj-status-pill critical">⚠️ Habitat Tidak Cocok</div>
+              <h3 id="iso-edu-title" class="iso-edu-title fj-title">🏃 Hewan Mengungsi ke Ekosistem Lain</h3>
+              <div id="iso-edu-sub" class="iso-edu-sub fj-sub">📍 Fokus Saat Ini: Bioma Pulau</div>
+            </div>
+          </div>
+
+          <p id="iso-edu-body" class="iso-edu-body fj-body"></p>
+
+          <div class="fj-diagram-box">
+            <div id="iso-edu-flow" class="fj-flow-row"></div>
+            <div id="iso-edu-survival" class="fj-survival-wrap"></div>
+          </div>
+
+          <div id="iso-edu-tip" class="iso-edu-tip fj-tip"></div>
+
+          <div class="fj-actions-row">
+            <button id="iso-edu-locate" class="fj-btn-locate">📍 Lihat Lokasi</button>
+            <button id="iso-edu-close" class="iso-edu-ok-btn fj-btn-restore">🌿 Mengerti &amp; Pulihkan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-Second Disaster & Habitat Loss Consequence Choice Modal ("Oh tidak! ... Perbaiki vs Lihat Akibatnya") -->
+      <div id="iso-conseq-modal" class="iso-edu-modal hidden">
+        <div class="iso-edu-card iso-conseq-card">
+          <div class="iso-edu-top">
+            <span id="iso-conseq-badge" class="iso-edu-badge iso-conseq-badge">⚠️ AKIBAT BERANTAI ALAM</span>
+            <button id="iso-conseq-x" class="iso-event-popup-close" title="Tutup">✕</button>
+          </div>
+          <h3 id="iso-conseq-title" class="iso-edu-title">😱 Oh tidak! Rantai Makanan Terganggu!</h3>
+          <p id="iso-conseq-body" class="iso-edu-body"></p>
+          <div id="iso-conseq-next" class="iso-edu-tip iso-conseq-warn"></div>
+          <div class="iso-conseq-actions">
+            <button id="iso-conseq-fix" class="iso-edu-ok-btn">🌿 Bantu Perbaiki Sekarang</button>
+            <button id="iso-conseq-watch" class="iso-conseq-watch-btn">👀 Biarkan &amp; Lihat Akibatnya</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Bottom-Left Guide / Status Toast -->
+      <div class="iso-guide-box">
+        <div class="iso-guide-head">PANDUAN EKOSISTEM</div>
+        <div id="iso-status-log" class="iso-status-log">Pilih kartu di bawah lalu ketuk daratan di pulau.</div>
+      </div>
+
+      <!-- Floating Quick-Jump Biome Strip above the Bottom Dock -->
+      <div id="iso-zone-collapsible" class="iso-zone-collapsible">
+        <div class="iso-zone-bar">
+          <button class="iso-mini-biome-btn iso-zone-btn" data-zone="all" title="Lihat Seluruh Pulau">🗺️ Semua</button>
+          <button class="iso-mini-biome-btn iso-zone-btn" data-zone="grassland"
+            title="Ke Zona Sawah &amp; Padang Rumput">🌾 Sawah</button>
+          <button class="iso-mini-biome-btn iso-zone-btn" data-zone="hills" title="Ke Zona Perbukitan Batu">⛰️
+            Bukit</button>
+          <button class="iso-mini-biome-btn iso-zone-btn" data-zone="tropical" title="Ke Zona Hutan Tropis">🌴
+            Tropis</button>
+          <button class="iso-mini-biome-btn iso-zone-btn" data-zone="swamp" title="Ke Zona Rawa Bakau">🌿 Rawa</button>
+          <button class="iso-mini-biome-btn iso-zone-btn" data-zone="desert" title="Ke Zona Gurun Oasis">🏜️
+            Gurun</button>
+          <button class="iso-mini-biome-btn iso-zone-btn" data-zone="peatland"
+            title="Ke Zona Lahan Gambut Kalimantan">🪵
+            Gambut</button>
+        </div>
+      </div>
+
+      <!-- Nusantara Batik Bottom Dock Bar: Tabbed Cream Cards + Advisor Box -->
+      <div class="iso-dock-wrap">
+        <div class="iso-dock-center">
+          <div id="iso-dock-tabs" class="iso-dock-tabs">
+            <button class="iso-dock-tab active" data-cat="all">Semua</button>
+            <button class="iso-dock-tab" data-cat="land">🌍 Tanah &amp; Peta</button>
+            <button class="iso-dock-tab" data-cat="cloud">☁️ Awan</button>
+            <button class="iso-dock-tab" data-cat="prod">🌱 Produsen</button>
+            <button class="iso-dock-tab" data-cat="fauna">🐾 Satwa</button>
+            <button class="iso-dock-tab" data-cat="human">🏡 Manusia</button>
+          </div>
+          <div class="iso-dock-bar">
+            <button id="iso-dock-prev" class="iso-dock-arrow" title="Geser Kartu ke Kiri">◀</button>
+            <div id="iso-card-dock" class="iso-card-dock"></div>
+            <button id="iso-dock-next" class="iso-dock-arrow" title="Geser Kartu ke Kanan">▶</button>
+          </div>
+        </div>
+
+        <div class="iso-advisor-box">
+          <div class="iso-advisor-avatar">🌿</div>
+          <div class="iso-advisor-info">
+            <div class="iso-advisor-label">Restu Alam</div>
+            <div id="iso-advisor-pct" class="iso-advisor-pct">88</div>
+            <div id="iso-advisor-tip" class="iso-advisor-tip">Ketuk kartu lalu taruh di daratan pulau.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evolving Interactive Coachmark Tutorial Overlay (2D & 3D Isometric) -->
+  <div id="eco-tutorial-overlay" class="eco-tutorial-overlay hidden" aria-live="polite">
+    <div id="eco-tut-spotlight" class="eco-tut-spotlight"></div>
+    <div id="eco-tut-card" class="eco-tut-card" role="dialog" aria-label="Panduan Interaktif Ecoborn">
+      <div class="eco-tut-head">
+        <span id="eco-tut-chapter" class="eco-tut-chapter">BAB 1 • DASAR EKOSISTEM</span>
+        <span id="eco-tut-step" class="eco-tut-step">1/4</span>
+      </div>
+      <div class="eco-tut-progress-track">
+        <div id="eco-tut-progress-fill" class="eco-tut-progress-fill" style="width: 25%;"></div>
+      </div>
+      <h3 id="eco-tut-title" class="eco-tut-title">🌱 Mulai dari Awan &amp; Rumput</h3>
+      <p id="eco-tut-body" class="eco-tut-body"></p>
+      <div id="eco-tut-hint" class="eco-tut-hint"></div>
+      <div class="eco-tut-actions">
+        <button id="eco-tut-skip" class="eco-tut-btn secondary">Lewati</button>
+        <button id="eco-tut-next" class="eco-tut-btn primary">Lanjut →</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="sprites.js?v=41"></script>
+  <script src="audio.js?v=41"></script>
+  <script src="data.js?v=41"></script>
+  <script src="isometric3d.js?v=42"></script>
+  <script src="game.js?v=42"></script>
+  <script src="tutorial.js?v=42"></script>
+</body>
+
+</html>
