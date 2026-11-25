@@ -238,6 +238,16 @@
     playError() {
       tone(190, 0.12, 'sawtooth', 0.09, 0);
       tone(150, 0.15, 'sawtooth', 0.09, 0.08);
+    },
+    pauseAll() {
+      if (ctx && ctx.state === 'running') {
+        ctx.suspend().catch(() => {});
+      }
+    },
+    resumeAll() {
+      if (enabled && ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
     }
   };
 

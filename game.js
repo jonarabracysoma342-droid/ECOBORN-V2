@@ -1714,16 +1714,21 @@
 
   if (menuBiokartBtn && biokartModal && biokartFrame) {
     menuBiokartBtn.addEventListener('click', () => {
-      window.EcoAudio.playDrop();
+      if (window.EcoAudio && typeof window.EcoAudio.pauseAll === 'function') {
+        window.EcoAudio.pauseAll();
+      }
       biokartFrame.src = 'biokart/index.html';
       biokartModal.classList.remove('hidden');
     });
   }
   if (biokartCloseBtn && biokartModal && biokartFrame) {
     biokartCloseBtn.addEventListener('click', () => {
-      window.EcoAudio.playDrop();
       biokartModal.classList.add('hidden');
       biokartFrame.src = 'about:blank';
+      if (window.EcoAudio && typeof window.EcoAudio.resumeAll === 'function') {
+        window.EcoAudio.resumeAll();
+      }
+      window.EcoAudio.playDrop();
     });
   }
 
